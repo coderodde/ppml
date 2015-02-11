@@ -1,7 +1,12 @@
 package net.coderodde.ppml.rateapp.controller;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.util.Scanner;
 import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -11,6 +16,30 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class LoadStaticDataServlet extends HttpServlet {
 
+    private static final String PARTIAL_PATH_TO_STATIC_DATA = 
+            "/WEB-INF/static/ml-100k";
+    
+    /**
+     * The name of the file containing ratings.
+     */
+    private static final String RATINGS_FILE = "u.data";
+    
+    /**
+     * The name of the file containing movie descriptions.
+     */
+    private static final String MOVIE_FILE = "u.item";
+    
+    /**
+     * The name of the file containing user descriptions.
+     */
+    private static final String USER_FILE = "u.user";
+    
+    /**
+     * The name of the file listing the genres used for classification.
+     */
+    private static final String GENRE_FILE = "u.genre";
+    
+    
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -22,8 +51,16 @@ public class LoadStaticDataServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.getOutputStream().println("Yooo!");
-        response.getOutputStream().println(getStaticDataPath());
+        final ServletOutputStream os = response.getOutputStream();
+        final String basicPath = getAbsolutePath(PARTIAL_PATH_TO_STATIC_DATA);
+        final String SLASH = File.separator;
+        
+        os.println(readFile(basicPath + SLASH + GENRE_FILE));
+        os.println(readFile(basicPath + SLASH + USER_FILE));
+        os.println(readFile(basicPath + SLASH + MOVIE_FILE));
+        os.println(readFile(basicPath + SLASH + RATINGS_FILE));
+        
+        os.close();
     }
 
     /**
@@ -64,10 +101,43 @@ public class LoadStaticDataServlet extends HttpServlet {
         return "This servlet loads static data into the database.";
     }
 
-    private String getStaticDataPath() {
-        final String relativeWebPath = "/WEB-INF/static/u.item";
-        final String absoluteDiskPath = getServletContext().
-                                        getRealPath(relativeWebPath);
-        return absoluteDiskPath;
+    /**
+     * Returns the absolute path to a specified relative path.
+     * 
+     * @param  relativePath the path where the user wants to get.
+     * @return the absolute path as a string.
+     */
+    private String getAbsolutePath(final String relativePath) {
+        return getServletContext().getRealPath(relativePath);
+    }
+    
+    /**
+     * Reads a text file whose absolute path is <code>absolutePath</code>.
+     * 
+     * @param  absolutePath the absolute path of the file to read.
+     * @return <code>null</code> if something fails or otherwise a string
+     *         containing the text in the input file.
+     */
+    private String readFile(final String absolutePath) {
+        final File file = new File(absolutePath);
+        
+        Scanner scanner = null;
+        
+        try {
+            scanner = new Scanner(new FileReader(file));
+        } catch (final FileNotFoundException fnfe) {
+            fnfe.printStackTrace(System.err);
+        }
+        
+        final StringBuilder sb = new StringBuilder();
+        
+        String line = null;
+        
+        while (scanner.hasNextLine()) {
+            sb.append(scanner.nextLine()).append('\n');
+        }
+        
+        scanner.close();
+        return sb.toString();
     }
 }
