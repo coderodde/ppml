@@ -1,9 +1,12 @@
 package net.coderodde.ppml.rateapp.controller;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.util.Scanner;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -121,23 +124,24 @@ public class LoadStaticDataServlet extends HttpServlet {
     private String readFile(final String absolutePath) {
         final File file = new File(absolutePath);
         
-        Scanner scanner = null;
-        
         try {
-            scanner = new Scanner(new FileReader(file));
+            final Reader reader = 
+                    new InputStreamReader(new FileInputStream(file), "ISO-8859-1");
+            
+            final Scanner scanner = new Scanner(reader);
+            final StringBuilder builder = new StringBuilder();
+            
+            while (scanner.hasNextLine()) {
+                builder.append(scanner.nextLine()).append('\n');
+            }
+            
+            return builder.toString();
+        } catch (final UnsupportedEncodingException uee) {
+            uee.printStackTrace(System.err);
+            return null;
         } catch (final FileNotFoundException fnfe) {
             fnfe.printStackTrace(System.err);
+            return null;
         }
-        
-        final StringBuilder sb = new StringBuilder();
-        
-        String line = null;
-        
-        while (scanner.hasNextLine()) {
-            sb.append(scanner.nextLine()).append('\n');
-        }
-        
-        scanner.close();
-        return sb.toString();
     }
 }
