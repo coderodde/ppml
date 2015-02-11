@@ -52,8 +52,11 @@ public class PostgreSQLLayer implements DBLayer {
             final InitialContext ctx = new InitialContext();
             final DataSource ds = (DataSource) ctx.lookup(DATABASE_LOOKUP_NAME);
             return ds.getConnection();
-        } catch (final NamingException | SQLException ne) {
+        } catch (final NamingException ne) {
             ne.printStackTrace(System.err);
+            return null;
+        } catch (final SQLException sqle) {
+            sqle.printStackTrace(System.err);
             return null;
         }
     }
