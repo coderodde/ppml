@@ -1,0 +1,2 @@
+This is text is from WEB-INF/funky.txt! 
+:--)
