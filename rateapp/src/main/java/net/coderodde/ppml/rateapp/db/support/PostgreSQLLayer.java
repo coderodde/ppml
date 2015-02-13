@@ -30,8 +30,7 @@ public class PostgreSQLLayer implements DBLayer {
         final Connection connection = openConnection();
         
         if (connection == null) {
-            throw new NullPointerException("connection is null.");
-//            return false;
+            return false;
         }
         
         final PreparedStatement ps = getPreparedStatement(connection,

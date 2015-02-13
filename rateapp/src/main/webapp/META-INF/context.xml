@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Context antiJARLocking="true" path="/rateapp">
+<Context antiJARLocking="true">
   <Resource auth="Container" 
             driverClassName="org.postgresql.Driver" 
             maxActive="50" 
