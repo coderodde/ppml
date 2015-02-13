@@ -65,10 +65,10 @@ public class LoadStaticDataServlet extends HttpServlet {
         final String basicPath = getAbsolutePath(PARTIAL_PATH_TO_STATIC_DATA);
         final String SLASH = File.separator;
         
-        os.println(readFile(basicPath + SLASH + GENRE_FILE));
-        os.println(readFile(basicPath + SLASH + USER_FILE));
-        os.println(readFile(basicPath + SLASH + MOVIE_FILE));
-        os.println(readFile(basicPath + SLASH + RATINGS_FILE));
+//        os.println(readFile(basicPath + SLASH + GENRE_FILE));
+//        os.println(readFile(basicPath + SLASH + USER_FILE));
+//        os.println(readFile(basicPath + SLASH + MOVIE_FILE));
+//        os.println(readFile(basicPath + SLASH + RATINGS_FILE));
         
         final String PATH_PREFIX = basicPath + SLASH;
         
