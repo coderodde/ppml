@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Date;
 import java.util.List;
 import javax.sql.DataSource;
 import javax.naming.InitialContext;
@@ -85,8 +86,15 @@ public class PostgreSQLLayer implements DBLayer {
             ps.setInt(1, movie.getMovieID());
             ps.setString(2, movie.getMovieTitle());
             ps.setDate(3, new java.sql.Date(movie.getReleaseDate().getTime()));
-            ps.setDate(4, new java.sql.Date(movie.getVideoReleaseDate() 
-                                                 .getTime()));
+            
+            final Date videoRelease = movie.getVideoReleaseDate();
+            
+            if (videoRelease != null) {
+                ps.setDate(4, new java.sql.Date(videoRelease.getTime()));
+            } else {
+                ps.setDate(4, null);
+            }
+                
             ps.setString(5, movie.getIMDBUrl());
             
             final StringBuilder sb = new StringBuilder();
