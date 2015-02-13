@@ -27,7 +27,6 @@ public class UserMatcher {
     private final Map<Integer, Movie> mapMovieIDtoMovie;
     private final Map<Integer, User> mapUserIDtoUser;
     private final Map<User, Map<Movie, Rating>> mapUserMovieToRating;
-//    private final Map<Movie, Rating> mapMovieToRating;
     
     public UserMatcher(final List<User> userList, 
                        final List<Movie> movieList,
@@ -39,7 +38,6 @@ public class UserMatcher {
         this.mapMovieIDtoMovie = new HashMap<>(movieList.size());
         this.mapUserIDtoUser = new HashMap<>(userList.size());
         this.mapUserMovieToRating = new HashMap<>(userList.size());
-//        this.mapMovieToRating = new HashMap<>(movieList.size());
         
         for (final Movie movie : movieList) {
             mapMovieIDtoMovie.put(movie.getMovieID(), movie);
@@ -67,7 +65,6 @@ public class UserMatcher {
             
             mapUserToMovieSet.get(user).add(movie);
             mapUserMovieToRating.get(user).put(movie, rating);
-//            mapMovieToRating.put(movie, rating);
         }
     }
     
@@ -77,14 +74,12 @@ public class UserMatcher {
     
     public List<User> match(final User targetUser, final int amount) {
         final SimpleHeap<User, Float> heap = new SimpleHeap<>();
-        final Set<Movie> targetMovies = mapUserToMovieSet.get(targetUser);
         
         for (final User trialUser : userList) {
             if (trialUser.equals(targetUser)) {
                 continue;
             }
             
-            final Set<Movie> trialMovies = mapUserToMovieSet.get(trialUser);
             final float coefficient = 
                     jaccardCoefficient(trialUser,
                                        targetUser);
@@ -93,6 +88,7 @@ public class UserMatcher {
             
             if (heap.size() > amount) {
                 // Keep only 'amount' hottest users!
+                
                 heap.extractMinimum();
             }
         }
@@ -116,11 +112,49 @@ public class UserMatcher {
     public List<Movie> gerRecommendations(final User target,
                                           final int neighborAmount,
                                           final int maxRecommendations) {
-        final List<User> neighbors = match(target, neighborAmount);
+        final List<User> neighborList = match(target, neighborAmount);
+        
+        final Map<Movie, Integer> mapMovieToRatingScore = new HashMap<>();
+        final Map<Movie, Integer> mapMovieToRatingAmount = new HashMap<>();
+        
+        for (final User neighbor : neighborList) {
+            final Set<Movie> neighborsMovieSet = 
+                    mapUserToMovieSet.get(neighbor);
+            
+            for (final Movie movie : neighborsMovieSet) {
+                if (!mapMovieToRatingAmount.containsKey(movie)) {
+                    mapMovieToRatingAmount.put(movie, 1);
+                    mapMovieToRatingScore.put(movie,
+                                              mapUserMovieToRating
+                                              .get(neighbor)
+                                              .get(movie).getScore());
+                } else {
+                    mapMovieToRatingAmount
+                            .put(movie,
+                                 mapMovieToRatingAmount.get(movie) + 1);
+                    
+                    mapMovieToRatingScore
+                            .put(movie,
+                                 mapMovieToRatingScore.get(movie) + 
+                                 mapUserMovieToRating
+                                 .get(neighbor)
+                                 .get(movie).getScore());
+                }
+            }
+        }
+        
+        final Map<Movie, Float> averageMovieRating = new HashMap<>();
+        
+        for (final Movie movie : mapMovieToRatingAmount.keySet()) {
+            final float averageScore = 1.0f * mapMovieToRatingScore.get(movie) /
+                                              mapMovieToRatingAmount.get(movie);
+            averageMovieRating.put(movie, averageScore);
+        }
+        
         final Set<Movie> set = new HashSet<>();
         final List<Movie> ret = new ArrayList<>(maxRecommendations);
         
-        for (final User neighbor : neighbors) {
+        for (final User neighbor : neighborList) {
             set.addAll(mapUserToMovieSet.get(neighbor));
         }
         
@@ -134,7 +168,7 @@ public class UserMatcher {
         
         work.addAll(set);
         
-        Collections.sort(work, new MovieComparator());
+        Collections.sort(work, new MovieComparator(averageMovieRating));
         
         for (int i = 0; i < maxRecommendations && work.size() > 0; ++i) {
             ret.add(work.remove(work.size() - 1));
@@ -180,15 +214,22 @@ public class UserMatcher {
     }
     
     /**
-     * The comparator insures that upon sorting movies, the movies are ordered
-     * into ascending order by their score, so "hottest" films end to the right
-     * side of the array.
+     * This comparator ensures that upon sorting movies, the movies are ordered
+     * into ascending order by their average score, so the "hottest" films end 
+     * to the right side of the array.
      */
     private class MovieComparator implements Comparator<Movie> {
         
+        private final Map<Movie, Float> averageScoreMap;
+        
+        MovieComparator(final Map<Movie, Float> averageScoreMap) {
+            this.averageScoreMap = averageScoreMap;
+        }
+        
         @Override
-        public int compare(final Movie o1, final Movie o2) {
-            return 0;
+        public int compare(final Movie movie1, final Movie movie2) {
+            return Float.compare(averageScoreMap.get(movie1),
+                                 averageScoreMap.get(movie2));
         }
     }
 }

@@ -1,16 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Context antiJARLocking="true">
-    <Resource 
-          name="jdbc/rateappdb"
-          auth="Container"
-          type="javax.sql.DataSource"
-          removeAbandoned="true"
-          removeAbandonedTimeout="15"
-          maxActive="50"
-          maxIdle="15"
-          maxWait="10000"
-          username="rodionef"
-          password=""
-          driverClassName="org.postgresql.Driver"
-          url="jdbc:postgresql://localhost/rodionef" />
+<Context antiJARLocking="true" path="/rateapp">
+  <Resource auth="Container" driverClassName="org.postgresql.Driver" maxActive="50" maxIdle="15" maxWait="10000" name="jdbc/rateappdb" password="" removeAbandoned="true" removeAbandonedTimeout="15" type="javax.sql.DataSource" url="jdbc:postgresql://localhost/rodionef" username="rodionef"/>
 </Context>
