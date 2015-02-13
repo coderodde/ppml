@@ -7,12 +7,19 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 import java.util.Scanner;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import net.coderodde.ppml.loader.DataLoader;
+import net.coderodde.ppml.rateapp.db.DBLayer;
+import net.coderodde.ppml.rateapp.db.support.PostgreSQLLayer;
+import net.coderodde.ppml.rateapp.model.Movie;
+import net.coderodde.ppml.rateapp.model.Rating;
+import net.coderodde.ppml.rateapp.model.User;
 
 /**
  * /statload
@@ -64,6 +71,23 @@ public class LoadStaticDataServlet extends HttpServlet {
         os.println(readFile(basicPath + SLASH + RATINGS_FILE));
         
         os.close();
+        
+        final String PATH_PREFIX = basicPath + SLASH;
+        
+        final List<Movie> movieList = 
+                DataLoader.loadMovies(PATH_PREFIX + MOVIE_FILE);
+        
+        final List<Rating> ratingList =
+                DataLoader.loadRatings(PATH_PREFIX + RATINGS_FILE);
+        
+        final List<User> userList =
+                DataLoader.loadUsers(PATH_PREFIX + USER_FILE);
+        
+        final DBLayer dbl = new PostgreSQLLayer();
+        
+        for (int i = 0; i < 2; ++i) {
+            dbl.addUser(userList.get(0));
+        }
     }
 
     /**

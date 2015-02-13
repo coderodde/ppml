@@ -19,7 +19,8 @@ import net.coderodde.ppml.rateapp.model.User;
 public class PostgreSQLLayer implements DBLayer {
 
     private static final class SQL {
-        static final String ADD_USER = "";
+        static final String ADD_USER_WITH_ID = 
+                "INSERT INTO rateapp_users VALUES (?, ?, ?, ?, ?, ?);";
     }
     
     private static final String DATABASE_LOOKUP_NAME = 
@@ -33,11 +34,26 @@ public class PostgreSQLLayer implements DBLayer {
         }
         
         final PreparedStatement ps = getPreparedStatement(connection,
-                                                          SQL.ADD_USER);
-        ps.set
+                                                          SQL.ADD_USER_WITH_ID);
         
-        closeConnection(connection);
-        return false;
+        try {
+            ps.setInt(1, user.getUserID());
+            ps.setString(2, user.getUserName());
+            ps.setInt(3, user.getAge());
+            ps.setString(4, user.getGender().toSQL());
+            ps.setString(5, user.getOccupation());
+            ps.setString(6, user.getZipCode());
+            
+            ps.executeUpdate();
+            
+            closeStatement(ps);
+            closeConnection(connection);
+            return false;
+        } catch (final SQLException sqle) {
+            closeStatement(ps);
+            closeConnection(connection);
+            return false;
+        }   
     }
 
     public boolean addMovie(Movie movie) {
@@ -94,6 +110,14 @@ public class PostgreSQLLayer implements DBLayer {
         } catch (final SQLException sqle) {
             sqle.printStackTrace(System.err);
             return null;
+        }
+    }
+    
+    private void closeStatement(final Statement statement) {
+        try {
+            statement.close();
+        } catch (final SQLException sqle) {
+            sqle.printStackTrace(System.err);
         }
     }
 }

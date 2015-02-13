@@ -7,7 +7,8 @@ public class User {
         MALE,
         UNKNOWN;
         
-        public String getTextRepresentation() {
+        @Override
+        public String toString() {
             switch (this) {
                 case FEMALE:
                     return "female";
@@ -19,7 +20,23 @@ public class User {
                     return "unknown gender";
                     
                 default:
-                    throw new IllegalStateException("Unknown gender.");
+                    throw new IllegalStateException("Unknown enumerator.");
+            }
+        }
+        
+        public String toSQL() {
+            switch (this) {
+                case FEMALE:
+                    return "F";
+                    
+                case MALE:
+                    return "M";
+                    
+                case UNKNOWN:
+                    return null;
+                    
+                default:
+                    throw new IllegalStateException("Unknown enumerator.");
             }
         }
     };
@@ -90,7 +107,7 @@ public class User {
                    .append(", age: ")
                    .append(age)
                    .append(", gender: ")
-                   .append(gender.getTextRepresentation())
+                   .append(gender.toString())
                    .append(", occupation: ")
                    .append(occupation)
                    .append(", ZIP code: ")
