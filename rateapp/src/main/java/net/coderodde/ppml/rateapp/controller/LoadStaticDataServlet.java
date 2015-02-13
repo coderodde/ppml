@@ -84,9 +84,9 @@ public class LoadStaticDataServlet extends HttpServlet {
         final List<User> userList =
                 DataLoader.loadUsers(PATH_PREFIX + USER_FILE);
         
-        for (final Movie movie : movieList) {
-            os.println(movie.toString());
-        }
+//        for (final Movie movie : movieList) {
+//            os.println(movie.toString());
+//        }
         
         os.println("Users: " + userList.size() + ", movies: " 
                    + movieList.size() + ", ratings: " + ratingList.size());
