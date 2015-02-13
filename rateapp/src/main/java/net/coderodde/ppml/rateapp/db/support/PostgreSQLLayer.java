@@ -26,7 +26,7 @@ public class PostgreSQLLayer implements DBLayer {
     private static final String DATABASE_LOOKUP_NAME = 
             "java:/comp/env/jdbc/rateappdb";
     
-    public boolean addUser(User user) {
+    public boolean addUser(final User user) {
         final Connection connection = openConnection();
         
         if (connection == null) {
