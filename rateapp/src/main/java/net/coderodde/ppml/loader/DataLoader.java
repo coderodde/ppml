@@ -23,6 +23,7 @@ public class DataLoader {
     private static final int GENRE_ATTRIBUTES = 2;
     private static final int RATING_ATTRIBUTES = 4;
     private static final String DATE_FORMAT = "dd-MMM-yyyy";
+//    private static final String DATE_FORMAT = "F-M-y";
     
     public static List<User> loadUsers(final String path) {
         final File file = new File(path);
@@ -243,5 +244,9 @@ public class DataLoader {
      */
     private static boolean checkFile(final File file) {
         return file.exists() && file.isFile();
+    }
+    
+    public static void main(final String... args) {
+        System.out.println("yea");
     }
 }
