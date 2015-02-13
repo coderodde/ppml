@@ -77,6 +77,12 @@ public class PostgreSQLLayer implements DBLayer {
         final String url = "jdbc:postgresql://localhost/rodionef";
         
         try {
+            Class.forName("org.postgresql.Driver");
+        } catch (final ClassNotFoundException cnfe) {
+            return null;
+        }
+            
+        try {
             return DriverManager.getConnection(url, 
                                                "rodionef", 
                                                "ab58a26cdfab5f1f");
