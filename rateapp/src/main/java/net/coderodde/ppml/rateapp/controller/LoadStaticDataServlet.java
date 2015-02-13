@@ -88,7 +88,7 @@ public class LoadStaticDataServlet extends HttpServlet {
         final DBLayer dbl = new PostgreSQLLayer();
         
         for (int i = 0; i < 2; ++i) {
-            os.println(dbl.addUser(userList.get(0)));
+            os.println(dbl.addUser(userList.get(i)));
         }
         
         os.close();
