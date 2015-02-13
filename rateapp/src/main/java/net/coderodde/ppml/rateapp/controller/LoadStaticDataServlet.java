@@ -111,9 +111,9 @@ public class LoadStaticDataServlet extends HttpServlet {
             }
         }
         
-        System.out.println("Users: " + usersAdded + ", " +
-                           "movies: " + moviesAdded + ", " +
-                           "ratings: " + ratingsAdded);
+        os.println("Users: " + usersAdded + ", " +
+                   "movies: " + moviesAdded + ", " +
+                   "ratings: " + ratingsAdded);
         
         os.close();
     }
