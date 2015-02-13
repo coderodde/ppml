@@ -70,24 +70,28 @@ public class LoadStaticDataServlet extends HttpServlet {
         os.println(readFile(basicPath + SLASH + MOVIE_FILE));
         os.println(readFile(basicPath + SLASH + RATINGS_FILE));
         
-        os.close();
-        
         final String PATH_PREFIX = basicPath + SLASH;
         
         final List<Movie> movieList = 
                 DataLoader.loadMovies(PATH_PREFIX + MOVIE_FILE);
         
+
         final List<Rating> ratingList =
                 DataLoader.loadRatings(PATH_PREFIX + RATINGS_FILE);
         
         final List<User> userList =
                 DataLoader.loadUsers(PATH_PREFIX + USER_FILE);
         
+        os.println("Users: " + userList.size() + ", movies: " 
+                   + movieList.size() + ", ratings: " + ratingList.size());
+        
         final DBLayer dbl = new PostgreSQLLayer();
         
         for (int i = 0; i < 2; ++i) {
-            dbl.addUser(userList.get(0));
+            os.println(dbl.addUser(userList.get(0)));
         }
+        
+        os.close();
     }
 
     /**
