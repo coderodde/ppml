@@ -117,7 +117,7 @@ public class PostgreSQLLayer implements DBLayer {
         }
         
         final PreparedStatement ps = getPreparedStatement(connection,
-                                                          "");
+                                                          SQL.ADD_RATING);
         if (ps == null) {
             close(connection);
             return false;
