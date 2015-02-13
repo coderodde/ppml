@@ -61,6 +61,8 @@ public class LoadStaticDataServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        response.setCharacterEncoding("ISO-8859-1");
+        
         final ServletOutputStream os = response.getOutputStream();
         final String basicPath = getAbsolutePath(PARTIAL_PATH_TO_STATIC_DATA);
         final String SLASH = File.separator;
@@ -70,11 +72,11 @@ public class LoadStaticDataServlet extends HttpServlet {
 //        os.println(readFile(basicPath + SLASH + MOVIE_FILE));
 //        os.println(readFile(basicPath + SLASH + RATINGS_FILE));
         
+        
         final String PATH_PREFIX = basicPath + SLASH;
         
         final List<Movie> movieList = 
                 DataLoader.loadMovies(PATH_PREFIX + MOVIE_FILE);
-        
 
         final List<Rating> ratingList =
                 DataLoader.loadRatings(PATH_PREFIX + RATINGS_FILE);
