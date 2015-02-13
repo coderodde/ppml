@@ -203,7 +203,7 @@ public class DataLoader {
         
         if (!videoReleaseDateString.isEmpty()) {
             try {
-                videoReleaseDate = formatter.parse(releaseDateString);
+                videoReleaseDate = formatter.parse(videoReleaseDateString);
             } catch (final ParseException pe) {
                 
             }

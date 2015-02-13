@@ -67,7 +67,7 @@ public class LoadStaticDataServlet extends HttpServlet {
         
 //        os.println(readFile(basicPath + SLASH + GENRE_FILE));
 //        os.println(readFile(basicPath + SLASH + USER_FILE));
-//        os.println(readFile(basicPath + SLASH + MOVIE_FILE));
+        os.println(readFile(basicPath + SLASH + MOVIE_FILE));
 //        os.println(readFile(basicPath + SLASH + RATINGS_FILE));
         
         final String PATH_PREFIX = basicPath + SLASH;
