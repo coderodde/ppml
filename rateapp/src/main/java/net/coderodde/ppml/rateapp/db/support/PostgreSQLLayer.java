@@ -1,6 +1,7 @@
 package net.coderodde.ppml.rateapp.db.support;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -73,17 +74,27 @@ public class PostgreSQLLayer implements DBLayer {
     }
     
     private Connection openConnection() {
+        final String url = "jdbc:postgresql://localhost/rodionef";
+        
         try {
-            final InitialContext ctx = new InitialContext();
-            final DataSource ds = (DataSource) ctx.lookup(DATABASE_LOOKUP_NAME);
-            return ds.getConnection();
-        } catch (final NamingException ne) {
-            ne.printStackTrace(System.err);
-            return null;
+            return DriverManager.getConnection(url, 
+                                               "rodionef", 
+                                               "ab58a26cdfab5f1f");
         } catch (final SQLException sqle) {
             sqle.printStackTrace(System.err);
             return null;
         }
+//        try {
+//            final InitialContext ctx = new InitialContext();
+//            final DataSource ds = (DataSource) ctx.lookup(DATABASE_LOOKUP_NAME);
+//            return ds.getConnection();
+//        } catch (final NamingException ne) {
+//            ne.printStackTrace(System.err);
+//            return null;
+//        } catch (final SQLException sqle) {
+//            sqle.printStackTrace(System.err);
+//            return null;
+//        }
     }
     
     private void closeConnection(final Connection connection) {
