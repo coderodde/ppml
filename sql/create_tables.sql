@@ -1,5 +1,6 @@
 CREATE TABLE rateapp_users (
   user_id    INTEGER,
+  username   VARCHAR(30),
   age        SMALLINT,
   gender     CHAR(1),
   occupation VARCHAR(50),

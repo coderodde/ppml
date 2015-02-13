@@ -1,6 +1,7 @@
 package net.coderodde.ppml.rateapp.db.support;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
@@ -17,9 +18,25 @@ import net.coderodde.ppml.rateapp.model.User;
  */
 public class PostgreSQLLayer implements DBLayer {
 
-    private static final String DATABASE_LOOKUP_NAME = "";
+    private static final class SQL {
+        static final String ADD_USER = "";
+    }
+    
+    private static final String DATABASE_LOOKUP_NAME = 
+            "java:/comp/env/jdbc/rateappdb";
     
     public boolean addUser(User user) {
+        final Connection connection = openConnection();
+        
+        if (connection == null) {
+            return false;
+        }
+        
+        final PreparedStatement ps = getPreparedStatement(connection,
+                                                          SQL.ADD_USER);
+        ps.set
+        
+        closeConnection(connection);
         return false;
     }
 
@@ -35,16 +52,8 @@ public class PostgreSQLLayer implements DBLayer {
         return null;
     }
     
-    private boolean userTableExists() {
-        return false;
-    }
-    
-    private boolean movieTableExists() {
-        return false;
-    }
-    
-    private boolean ratingTableExists() {
-        return false;
+    public List<User> getAllUsers() {
+        return null;
     }
     
     private Connection openConnection() {
@@ -72,6 +81,16 @@ public class PostgreSQLLayer implements DBLayer {
     private Statement getStatement(final Connection connection) {
         try {
             return connection.createStatement();
+        } catch (final SQLException sqle) {
+            sqle.printStackTrace(System.err);
+            return null;
+        }
+    }
+    
+    private PreparedStatement getPreparedStatement(final Connection connection,
+                                                   final String template) {
+        try {
+            return connection.prepareStatement(template);
         } catch (final SQLException sqle) {
             sqle.printStackTrace(System.err);
             return null;

@@ -16,5 +16,7 @@ public interface DBLayer {
     
     public boolean addRating(final Rating rating);
     
-    public List<Movie> getAllMovies();
+    public List<User> getAllUsers();
+    
+    
 }
