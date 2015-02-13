@@ -1,5 +1,6 @@
 package net.coderodde.ppml.rateapp.model;
 
+import java.util.Arrays;
 import java.util.Date;
 
 public class Movie {
@@ -43,6 +44,10 @@ public class Movie {
     
     public String getIMDBUrl() {
         return imdbUrl;
+    }
+    
+    public boolean[] getGenreFlags() {
+        return Arrays.copyOf(genreFlags, genreFlags.length);
     }
     
     public boolean hasGenre(final int genreIndex) {

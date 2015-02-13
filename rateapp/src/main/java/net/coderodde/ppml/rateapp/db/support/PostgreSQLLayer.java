@@ -1,7 +1,6 @@
 package net.coderodde.ppml.rateapp.db.support;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -20,8 +19,15 @@ import net.coderodde.ppml.rateapp.model.User;
 public class PostgreSQLLayer implements DBLayer {
 
     private static final class SQL {
+        
         static final String ADD_USER_WITH_ID = 
                 "INSERT INTO rateapp_users VALUES (?, ?, ?, ?, ?, ?);";
+        
+        static final String ADD_MOVIE = 
+                "INSERT INTO rateapp_movies VALUES (?, ?, ?, ?, ?, ?);";
+        
+        static final String ADD_RATING = 
+                "INSERT INTO rateapp_ratings VALUES (?, ?, ?, ?);";
     }
     
     private static final String DATABASE_LOOKUP_NAME = 
@@ -36,6 +42,10 @@ public class PostgreSQLLayer implements DBLayer {
         
         final PreparedStatement ps = getPreparedStatement(connection,
                                                           SQL.ADD_USER_WITH_ID);
+        if (ps == null) {
+            close(connection);
+            return false;
+        }
         
         try {
             ps.setInt(1, user.getUserID());
@@ -47,22 +57,88 @@ public class PostgreSQLLayer implements DBLayer {
             
             ps.executeUpdate();
             
-            closeStatement(ps);
-            closeConnection(connection);
+            close(ps);
+            close(connection);
             return true;
         } catch (final SQLException sqle) {
-            closeStatement(ps);
-            closeConnection(connection);
+            close(ps);
+            close(connection);
             return false;
         }   
     }
 
     public boolean addMovie(Movie movie) {
-        return false;
+        final Connection connection = openConnection();
+        
+        if (connection == null) {
+            return false;
+        }
+        
+        final PreparedStatement ps = getPreparedStatement(connection,
+                                                          SQL.ADD_MOVIE);
+        if (ps == null) {
+            close(connection);
+            return false;
+        }
+        
+        try {
+            ps.setInt(1, movie.getMovieID());
+            ps.setString(2, movie.getMovieTitle());
+            ps.setDate(3, new java.sql.Date(movie.getReleaseDate().getTime()));
+            ps.setDate(4, new java.sql.Date(movie.getVideoReleaseDate() 
+                                                 .getTime()));
+            ps.setString(5, movie.getIMDBUrl());
+            
+            final StringBuilder sb = new StringBuilder();
+            
+            for (final boolean b : movie.getGenreFlags()) {
+                sb.append(b ? '1' : '0');
+            }
+            
+            ps.setString(6, sb.toString());
+            
+            ps.executeUpdate();
+            
+            close(ps);
+            close(connection);
+            return true;
+        } catch (final SQLException sqle) {
+            close(ps);
+            close(connection);
+            return false;
+        }
     }
 
     public boolean addRating(Rating rating) {
-        return false;
+        final Connection connection = openConnection();
+        
+        if (connection == null) {
+            return false;
+        }
+        
+        final PreparedStatement ps = getPreparedStatement(connection,
+                                                          "");
+        if (ps == null) {
+            close(connection);
+            return false;
+        }
+        
+        try {
+            ps.setInt(1, rating.getUserID());
+            ps.setInt(2, rating.getItemID());
+            ps.setInt(3, rating.getScore());
+            ps.setLong(4, rating.getTimestamp());
+            
+            ps.executeUpdate();
+            
+            close(ps);
+            close(connection);
+            return true;
+        } catch (final SQLException sqle) {
+            close(ps);
+            close(connection);
+            return false;
+        }
     }
 
     public List<Movie> getAllMovies() {
@@ -103,7 +179,7 @@ public class PostgreSQLLayer implements DBLayer {
         }
     }
     
-    private void closeConnection(final Connection connection) {
+    private void close(final Connection connection) {
         try {
             connection.close();
         } catch (final SQLException sqle) {
@@ -130,7 +206,7 @@ public class PostgreSQLLayer implements DBLayer {
         }
     }
     
-    private void closeStatement(final Statement statement) {
+    private void close(final Statement statement) {
         try {
             statement.close();
         } catch (final SQLException sqle) {
