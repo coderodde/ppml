@@ -1,14 +1,10 @@
-CREATE SEQUENCE uid_seq;
-
 CREATE TABLE rateapp_users (
-  user_id    SERIAL PRIMARY KEY DEFAULT nextval('uid_seq'),
+  user_id    SERIAL PRIMARY KEY,
   username   VARCHAR(30),
   age        SMALLINT,
   gender     CHAR(1),
   occupation VARCHAR(50),
   zip_code   VARCHAR(6));
-
-ALTER SEQUENCE uid_seq OWNED BY rateapp_users.user_id;
 
 CREATE TABLE rateapp_movies (
   movie_id       SERIAL PRIMARY KEY,
