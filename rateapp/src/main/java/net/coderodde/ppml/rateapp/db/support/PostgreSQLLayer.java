@@ -2,6 +2,7 @@ package net.coderodde.ppml.rateapp.db.support;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Date;
@@ -29,6 +30,9 @@ public class PostgreSQLLayer implements DBLayer {
         
         static final String ADD_RATING = 
                 "INSERT INTO rateapp_ratings VALUES (?, ?, ?, ?);";
+        
+        static final String GET_USER_BY_NAME =
+                "SELECT * FROM rateapp_users WHERE username = ?;";
     }
     
     private static final String DATABASE_LOOKUP_NAME = 
@@ -156,6 +160,41 @@ public class PostgreSQLLayer implements DBLayer {
         }
     }
 
+    @Override
+    public User getUserByNickname(String nickname) {
+        final Connection connection = openConnection();
+        
+        if (connection == null) {
+            return null;
+        }
+        
+        final PreparedStatement ps = getPreparedStatement(connection,
+                                                          SQL.GET_USER_BY_NAME);
+        
+        if (ps == null) {
+            close(connection);
+            return null;
+        }
+        
+        try {
+            ps.setString(1, nickname);
+            final ResultSet rs = ps.executeQuery();
+
+            final User user = extractUser(rs);
+            
+            close(rs);
+            close(ps);
+            close(connection);
+            
+            return user;
+        } catch (final SQLException sqle) {
+            sqle.printStackTrace(System.err);
+            close(ps);
+            close(connection);
+            return null;
+        }
+    }
+    
     public List<Movie> getAllMovies() {
         return null;
     }
@@ -165,22 +204,6 @@ public class PostgreSQLLayer implements DBLayer {
     }
     
     private Connection openConnection() {
-//        final String url = "jdbc:postgresql://localhost/rodionef";
-//        
-//        try {
-//            Class.forName("org.postgresql.Driver");
-//        } catch (final ClassNotFoundException cnfe) {
-//            return null;
-//        }
-//            
-//        try {
-//            return DriverManager.getConnection(url, 
-//                                               "rodionef", 
-//                                               "ab58a26cdfab5f1f");
-//        } catch (final SQLException sqle) {
-//            sqle.printStackTrace(System.err);
-//            return null;
-//        }
         try {
             final InitialContext ctx = new InitialContext();
             final DataSource ds = (DataSource) ctx.lookup(DATABASE_LOOKUP_NAME);
@@ -226,6 +249,44 @@ public class PostgreSQLLayer implements DBLayer {
             statement.close();
         } catch (final SQLException sqle) {
             sqle.printStackTrace(System.err);
+        }
+    }
+    
+    private void close(final ResultSet rs) {
+        try {
+            rs.close();
+        } catch (final SQLException sqle) {
+            sqle.printStackTrace(System.err);
+        }
+    }
+    
+    private static User extractUser(final ResultSet rs) {
+        try {
+            rs.next();
+            
+            final int userId = rs.getInt(1);
+            final String username = rs.getString(2);
+            final int age = rs.getInt(3);
+            final String gender = rs.getString(4);
+            final String occupation = rs.getString(5);
+            final String zipCode = rs.getString(6);
+            
+            final User.Gender genderEnum = 
+                    gender.equals("F") ? 
+                    User.Gender.FEMALE :
+                    (gender.equals("M") ?
+                     User.Gender.MALE :
+                     User.Gender.UNKNOWN);
+            
+            return new User(userId, 
+                            username,
+                            age,
+                            genderEnum,
+                            occupation,
+                            zipCode);
+            
+        } catch (final SQLException sqle) {
+            return null;
         }
     }
 }

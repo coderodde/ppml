@@ -66,13 +66,6 @@ public class LoadStaticDataServlet extends HttpServlet {
         final ServletOutputStream os = response.getOutputStream();
         final String basicPath = getAbsolutePath(PARTIAL_PATH_TO_STATIC_DATA);
         final String SLASH = File.separator;
-        
-//        os.println(readFile(basicPath + SLASH + GENRE_FILE));
-//        os.println(readFile(basicPath + SLASH + USER_FILE));
-//        os.println(readFile(basicPath + SLASH + MOVIE_FILE));
-//        os.println(readFile(basicPath + SLASH + RATINGS_FILE));
-        
-        
         final String PATH_PREFIX = basicPath + SLASH;
         
         final List<Movie> movieList = 
@@ -84,16 +77,11 @@ public class LoadStaticDataServlet extends HttpServlet {
         final List<User> userList =
                 DataLoader.loadUsers(PATH_PREFIX + USER_FILE);
         
-//        for (final Movie movie : movieList) {
-//            os.println(movie.toString());
-//        }
-        
+        os.println("Read from static data:");
         os.println("Users: " + userList.size() + ", movies: " 
                    + movieList.size() + ", ratings: " + ratingList.size());
         
         final DBLayer dbl = new PostgreSQLLayer();
-        
-        os.println("YYYOOOO!");
         
         int usersAdded = 0;
         
@@ -119,6 +107,7 @@ public class LoadStaticDataServlet extends HttpServlet {
             }
         }
         
+        os.println("Added to the database:");
         os.println("Users: " + usersAdded + ", " +
                    "movies: " + moviesAdded + ", " +
                    "ratings: " + ratingsAdded);

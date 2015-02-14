@@ -5,9 +5,17 @@
         <servlet-name>LoadStaticDataServlet</servlet-name>
         <servlet-class>net.coderodde.ppml.rateapp.controller.LoadStaticDataServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>LoginServlet</servlet-name>
+        <servlet-class>net.coderodde.ppml.rateapp.controller.LoginServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>LoadStaticDataServlet</servlet-name>
         <url-pattern>/statload</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>LoginServlet</servlet-name>
+        <url-pattern>/login</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

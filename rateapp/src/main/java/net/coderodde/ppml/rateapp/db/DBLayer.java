@@ -18,5 +18,5 @@ public interface DBLayer {
     
     public List<User> getAllUsers();
     
-    
+    public User getUserByNickname(final String nickname);
 }
