@@ -13,7 +13,6 @@ import net.coderodde.ppml.rateapp.model.User;
 import net.coderodde.ppml.rateapp.model.User.Gender;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -248,8 +247,6 @@ public class DataLoader {
     }
     
     private static Date extractDate(final String dateString) {
-        final Date ret = new Date();
-        
         final String[] parts = dateString.split("-");
         
         if (parts.length != 3) {

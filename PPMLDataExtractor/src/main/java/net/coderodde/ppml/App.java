@@ -46,9 +46,9 @@ public class App {
         final List<Movie> movieList = 
                 DataLoader.loadMovies(path + File.separator + MOVIE_FILE_NAME);
         
-//        for (final Movie movie : movieList) {
-//            System.out.println(movie.toString());
-//        }
+        for (final Movie movie : movieList) {
+            System.out.println(movie.toString());
+        }
         
         System.out.println("Total movies: " + movieList.size());
         

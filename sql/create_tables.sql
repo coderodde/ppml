@@ -1,5 +1,5 @@
 CREATE TABLE rateapp_users (
-  user_id    INTEGER,
+  user_id    SERIAL PRIMARY KEY,
   username   VARCHAR(30),
   age        SMALLINT,
   gender     CHAR(1),
@@ -7,7 +7,7 @@ CREATE TABLE rateapp_users (
   zip_code   VARCHAR(6));
 
 CREATE TABLE rateapp_movies (
-  movie_id       INTEGER,
+  movie_id       SERIAL PRIMARY KEY,
   title          VARCHAR(100) NOT NULL,
   released       TIMESTAMP WITH TIME ZONE,
   video_released TIMESTAMP WITH TIME ZONE,
@@ -15,7 +15,8 @@ CREATE TABLE rateapp_movies (
   genres         VARCHAR(50));
 
 CREATE TABLE rateapp_ratings (
-  user_id   INTEGER,
-  movie_id  INTEGER,
+  user_id   INTEGER NOT NULL,
+  movie_id  INTEGER NOT NULL,
   score     SMALLINT,
-  timestamp BIGINT);
+  timestamp BIGINT,
+  PRIMARY KEY(user_id, movie_id));
