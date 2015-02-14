@@ -91,7 +91,7 @@ public class PostgreSQLLayer implements DBLayer {
             if (release != null) {
                 ps.setDate(3, new java.sql.Date(release.getTime()));
             } else {
-                
+                ps.setDate(3, null);
             }
             
             final Date videoRelease = movie.getVideoReleaseDate();
