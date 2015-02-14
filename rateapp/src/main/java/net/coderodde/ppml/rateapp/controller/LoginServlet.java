@@ -52,7 +52,10 @@ public class LoginServlet extends HttpServlet {
                                     User.Gender.UNKNOWN,
                                     "N/A",
                                     "N/A");
-            dbl.addUserByName(u);
+            final boolean added = dbl.addUserByName(u);
+            
+            os.println("Added to DB: " + added);
+            
             user = dbl.getUserByNickname(nickname);
             
             if (user != null) {
