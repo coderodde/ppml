@@ -94,7 +94,6 @@ public class PostgreSQLLayer implements DBLayer {
                 
             }
             
-            
             final Date videoRelease = movie.getVideoReleaseDate();
             
             if (videoRelease != null) {
