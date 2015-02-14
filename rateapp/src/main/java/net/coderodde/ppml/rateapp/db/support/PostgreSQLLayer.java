@@ -27,7 +27,7 @@ public class PostgreSQLLayer implements DBLayer {
         
         static final String ADD_USER_WITHOUT_ID =
                 "INSERT INTO rateapp_users VALUES " + 
-                "((SELECT COUNT(*) FROM rateapp_users) + 1, ?, ?, ?, ?, ?);";
+                "((SELECT max(user_id) FROM rateapp_users) + 1, ?, ?, ?, ?, ?);";
         
         static final String ADD_MOVIE = 
                 "INSERT INTO rateapp_movies VALUES (?, ?, ?, ?, ?, ?);";

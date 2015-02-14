@@ -33,7 +33,7 @@ public class User {
                     return "M";
                     
                 case UNKNOWN:
-                    return null;
+                    return "U";
                     
                 default:
                     throw new IllegalStateException("Unknown enumerator.");
