@@ -1,7 +1,7 @@
 CREATE SEQUENCE uid_seq;
 
 CREATE TABLE rateapp_users (
-  user_id    SERIAL PRIMARY KEY DEFAULT nextval('uid_se'),
+  user_id    SERIAL PRIMARY KEY DEFAULT nextval('uid_seq'),
   username   VARCHAR(30),
   age        SMALLINT,
   gender     CHAR(1),
