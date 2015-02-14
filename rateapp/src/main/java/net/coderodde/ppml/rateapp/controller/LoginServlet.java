@@ -57,6 +57,8 @@ public class LoginServlet extends HttpServlet {
             
             if (user != null) {
                 os.println("User created: " + user);
+            } else {
+                os.println("fdsafds!!");
             }
         } else {
             os.println("User alread exists: " + user);
