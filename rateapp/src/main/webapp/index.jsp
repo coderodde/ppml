@@ -13,9 +13,9 @@
             Age:<br>
             <input type="number" name="age"><br>
             Gender:<br>
-            <input type="radio" name="gender" value="Female">
-            <input type="radio" name="gender" value="Male">
-            <input type="radio" name="gender" value="Unknown" checked>
+            <input type="radio" name="gender" value="Female"> Female<br>
+            <input type="radio" name="gender" value="Male"> Male<br>
+            <input type="radio" name="gender" value="Unknown" checked> Unknown<br>
             Occupation:<br>
             <input type="text" name="occupation"><br>
             ZIP code:<br>
