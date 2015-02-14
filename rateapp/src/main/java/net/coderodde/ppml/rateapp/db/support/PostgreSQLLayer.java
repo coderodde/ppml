@@ -25,6 +25,14 @@ public class PostgreSQLLayer implements DBLayer {
         static final String ADD_USER_WITH_ID = 
                 "INSERT INTO rateapp_users VALUES (?, ?, ?, ?, ?, ?);";
         
+        static final String ADD_USER_WITHOUT_ID =
+                "INSERT INTO rateapp_users " +
+                "(username, "+
+                "age, " +
+                "gender, " +
+                "occupation, " +
+                "zip_code) VALUES (?, ?, ?, ?, ?);";
+        
         static final String ADD_MOVIE = 
                 "INSERT INTO rateapp_movies VALUES (?, ?, ?, ?, ?, ?);";
         
@@ -72,6 +80,42 @@ public class PostgreSQLLayer implements DBLayer {
         }   
     }
 
+    @Override
+    public boolean addUserByName(User user) {
+        final Connection connection = openConnection();
+        
+        if (connection == null) {
+            return false;
+        }
+        
+        final PreparedStatement ps = 
+                getPreparedStatement(connection,
+                                     SQL.ADD_USER_WITHOUT_ID);
+        
+        if (ps == null) {
+            close(connection);
+            return false;
+        }
+        
+        try {
+            ps.setString(1, user.getUserName());
+            ps.setInt(2, user.getAge());
+            ps.setString(3, user.getGender().toSQL());
+            ps.setString(4, user.getOccupation());
+            ps.setString(5, user.getZipCode());
+            
+            ps.executeUpdate();
+            
+            close(ps);
+            close(connection);
+            return true;
+        } catch (final SQLException sqle) {
+            close(ps);
+            close(connection);
+            return false;
+        }   
+    }
+    
     public boolean addMovie(Movie movie) {
         final Connection connection = openConnection();
         

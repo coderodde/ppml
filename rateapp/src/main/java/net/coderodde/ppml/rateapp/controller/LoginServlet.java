@@ -39,26 +39,29 @@ public class LoginServlet extends HttpServlet {
             return;
         }
         
+        final DBLayer dbl = new PostgreSQLLayer();
+        
+        User user = dbl.getUserByNickname(nickname);
+        
         final ServletOutputStream os = response.getOutputStream();
         
-        os.println("Nickname: " + request.getParameter("nickname"));
-        os.println("Age: " + request.getParameter("age"));
-        os.println("Gender: " + request.getParameter("gender"));
-        os.println("Occupation: " + request.getParameter("occupation"));
-        os.println("ZIP code: " + request.getParameter("zipcode"));
-//        final DBLayer dbl = new PostgreSQLLayer();
-//        final User user = dbl.getUserByNickname(nickname);
-//        
-//        if (user == null) {
-//            final User u = new User(0,
-//                                    nickname,
-//                                    -1,
-//                                    User.Gender.UNKNOWN,
-//                                    "N/A",
-//                                    "unknown");
-//        } else {
-//            
-//        }
+        if (user == null) {
+            final User u = new User(0,
+                                    nickname,
+                                    -1,
+                                    User.Gender.UNKNOWN,
+                                    "N/A",
+                                    "N/A");
+            dbl.addUserByName(u);
+            user = dbl.getUserByNickname(nickname);
+            
+            if (user != null) {
+                os.println("User created: " + user);
+            }
+        } else {
+            os.println("User alread exists: " + user);
+        }
+        
     }
 
     /**
