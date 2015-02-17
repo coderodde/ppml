@@ -41,6 +41,9 @@ public class PostgreSQLLayer implements DBLayer {
         
         static final String GET_ALL_MOVIES = 
                 "SELECT * FROM rateapp_movies;";
+        
+        static final String GET_USERS_RATINGS =
+                "SELECT * FROM rateapp_ratings WHERE user_id = ?;";
     }
     
     private static final String DATABASE_LOOKUP_NAME = 
@@ -206,7 +209,34 @@ public class PostgreSQLLayer implements DBLayer {
 
     @Override
     public List<Rating> getUsersRatings(User user) {
-        return null;
+        final Connection connection = openConnection();
+        
+        if (connection == null) {
+            return null;
+        }
+        
+        final PreparedStatement ps = getPreparedStatement(connection,
+                                                          SQL.GET_USERS_RATINGS);
+        
+        if (ps == null) {
+            close(connection);
+            return null;
+        }
+        
+        try {
+            ps.setInt(1, user.getUserID());
+            final ResultSet rs = ps.executeQuery();
+            final List<Rating> ratingList = extractRatings(rs);
+            close(rs);
+            close(ps);
+            close(connection);
+            return ratingList;
+        } catch (final SQLException sqle) {
+            close(ps);
+            close(connection);
+            sqle.printStackTrace(System.err);
+            return null;
+        }
     }
     
     @Override
@@ -343,6 +373,26 @@ public class PostgreSQLLayer implements DBLayer {
             rs.close();
         } catch (final SQLException sqle) {
             sqle.printStackTrace(System.err);
+        }
+    }
+    
+    private static List<Rating> extractRatings(final ResultSet rs) {
+        try {
+            final List<Rating> ratingList = new ArrayList<Rating>();
+            
+            while (rs.next()) {
+                final int userId = rs.getInt(1);
+                final int movieId = rs.getInt(2);
+                final int score = rs.getInt(3);
+                final long timestamp = rs.getLong(4);
+                
+                ratingList.add(new Rating(userId, movieId, score, timestamp));
+            }
+            
+            return ratingList;
+        } catch (final SQLException sqle) {
+            sqle.printStackTrace(System.err);
+            return null;
         }
     }
     

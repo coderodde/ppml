@@ -2,7 +2,10 @@ package net.coderodde.ppml.rateapp.controller;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
@@ -11,6 +14,8 @@ import javax.servlet.http.HttpServletResponse;
 import net.coderodde.ppml.rateapp.db.DBLayer;
 import net.coderodde.ppml.rateapp.db.support.PostgreSQLLayer;
 import net.coderodde.ppml.rateapp.model.Movie;
+import net.coderodde.ppml.rateapp.model.MovieAndRating;
+import net.coderodde.ppml.rateapp.model.Rating;
 import net.coderodde.ppml.rateapp.model.User;
 
 /**
@@ -66,16 +71,47 @@ public class LoginServlet extends HttpServlet {
                 os.println("User created!<br>");
             } else {
                 os.println("DB refused to create a user!<br>");
+                return;
             }
         } else {
-            os.println("User alread exists!<br>");
+            os.println("User already exists!<br>");
         }
         
         // Show the list of all movies with the facilities for rating.
         
         final List<Movie> movieList = dbl.getAllMovies();
         
-        os.println("Got " + movieList.size() + " movies from DB!");
+        os.println("Got " + movieList.size() + " movies from DB!<br>");
+        
+        final List<Rating> ratingList = dbl.getUsersRatings(user);
+        
+        os.println("Got " + ratingList.size() + " ratings for the user!<br>");
+        
+        final List<MovieAndRating> marList = 
+                new ArrayList<MovieAndRating>(movieList.size());
+        
+        
+        final Map<Movie, Rating> map = 
+                new HashMap<Movie, Rating>(movieList.size());
+        
+        final Map<Integer, Movie> movieMap =
+                new HashMap<Integer, Movie>(movieList.size());
+        
+        for (final Movie movie : movieList) {
+            movieMap.put(movie.getMovieID(), movie);
+        }
+        
+        for (final Rating rating : ratingList) {
+            map.put(movieMap.get(rating.getItemID()), rating);
+        }
+        
+        for (final Movie movie : movieList) {
+            final MovieAndRating mar = new MovieAndRating(movie, map.get(movie));
+            marList.add(mar);
+        }
+        
+        request.setAttribute("movieAndRatingList", marList);
+        request.getRequestDispatcher("rate.jsp").forward(request, response);
     }
 
     /**
