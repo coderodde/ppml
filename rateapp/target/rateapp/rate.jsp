@@ -1,5 +1,5 @@
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page contentType="text/html" pageEncoding="ISO-8859-1"%>
 <!DOCTYPE html>
 <html>
     <head>
@@ -20,6 +20,8 @@
                     <option value="one">1</option>
                     <option value="none">No rating</option>
                 </select>
+                <br>
+                
             </c:forEach>
             <input type="submit" value="Rate!">
         </form>
