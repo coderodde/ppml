@@ -34,7 +34,7 @@ public class LoginServlet extends HttpServlet {
         final String nickname = request.getParameter("nickname");
         
         if (nickname == null || nickname.isEmpty()) {
-            request.getRequestDispatcher("index.jsp")
+            request.getRequestDispatcher("/")
                    .forward(request, response);
             return;
         }
