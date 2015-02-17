@@ -3,6 +3,8 @@ package net.coderodde.ppml.rateapp.controller;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,8 +52,6 @@ public class LoginServlet extends HttpServlet {
         
         User user = dbl.getUserByNickname(nickname);
         
-//        final ServletOutputStream os = response.getOutputStream();
-        
         if (user == null) {
             // User with nickname is not in the DB. Try adding.
             final User u = new User(0,
@@ -61,35 +61,19 @@ public class LoginServlet extends HttpServlet {
                                     "N/A",
                                     "N/A");
             
-            final boolean added = dbl.addUserByName(u);
-            
-//            os.println("Added to DB: " + added + ".<br>");
-            
+            dbl.addUserByName(u);
             user = dbl.getUserByNickname(nickname);
             
-            if (user != null) {
-//                os.println("User created!<br>");
-            } else {
-//                os.println("DB refused to create a user!<br>");
+            if (user == null) {
+                response.getOutputStream()
+                        .println("<h1>DB refused to create a user!</h1>");
                 return;
             }
-        } else {
-//            os.println("User already exists!<br>");
         }
-        
-        // Show the list of all movies with the facilities for rating.
-        
         final List<Movie> movieList = dbl.getAllMovies();
-        
-//        os.println("Got " + movieList.size() + " movies from DB!<br>");
-        
         final List<Rating> ratingList = dbl.getUsersRatings(user);
-        
-//        os.println("Got " + ratingList.size() + " ratings for the user!<br>");
-        
         final List<MovieAndRating> marList = 
                 new ArrayList<MovieAndRating>(movieList.size());
-        
         
         final Map<Movie, Rating> map = 
                 new HashMap<Movie, Rating>(movieList.size());
@@ -110,10 +94,21 @@ public class LoginServlet extends HttpServlet {
             marList.add(mar);
         }
         
+        Collections.sort(marList, new MovieTitleComparator());
         request.setAttribute("movieAndRatingList", marList);
         request.getRequestDispatcher("rate.jsp").forward(request, response);
     }
 
+    private static class MovieTitleComparator 
+    implements Comparator<MovieAndRating> {
+
+        @Override
+        public int compare(MovieAndRating o1, MovieAndRating o2) {
+            return o1.getMovie().getMovieTitle()
+                     .compareTo(o2.getMovie().getMovieTitle());
+        }
+    }
+    
     /**
      * Handles the HTTP <code>GET</code> method.
      *
