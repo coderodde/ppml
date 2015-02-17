@@ -50,7 +50,7 @@ public class LoginServlet extends HttpServlet {
         
         User user = dbl.getUserByNickname(nickname);
         
-        final ServletOutputStream os = response.getOutputStream();
+//        final ServletOutputStream os = response.getOutputStream();
         
         if (user == null) {
             // User with nickname is not in the DB. Try adding.
@@ -63,29 +63,29 @@ public class LoginServlet extends HttpServlet {
             
             final boolean added = dbl.addUserByName(u);
             
-            os.println("Added to DB: " + added + ".<br>");
+//            os.println("Added to DB: " + added + ".<br>");
             
             user = dbl.getUserByNickname(nickname);
             
             if (user != null) {
-                os.println("User created!<br>");
+//                os.println("User created!<br>");
             } else {
-                os.println("DB refused to create a user!<br>");
+//                os.println("DB refused to create a user!<br>");
                 return;
             }
         } else {
-            os.println("User already exists!<br>");
+//            os.println("User already exists!<br>");
         }
         
         // Show the list of all movies with the facilities for rating.
         
         final List<Movie> movieList = dbl.getAllMovies();
         
-        os.println("Got " + movieList.size() + " movies from DB!<br>");
+//        os.println("Got " + movieList.size() + " movies from DB!<br>");
         
         final List<Rating> ratingList = dbl.getUsersRatings(user);
         
-        os.println("Got " + ratingList.size() + " ratings for the user!<br>");
+//        os.println("Got " + ratingList.size() + " ratings for the user!<br>");
         
         final List<MovieAndRating> marList = 
                 new ArrayList<MovieAndRating>(movieList.size());
