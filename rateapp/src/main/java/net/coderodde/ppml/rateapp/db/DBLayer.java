@@ -45,4 +45,7 @@ public interface DBLayer {
     
     public User getUserByNickname(final String nickname);
     
+    public List<Movie> getAllMovies();
+    
+    public List<Rating> getUsersRatings(final User user);
 }

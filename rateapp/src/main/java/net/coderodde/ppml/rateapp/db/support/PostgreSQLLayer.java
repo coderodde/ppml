@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.sql.DataSource;
@@ -37,6 +38,9 @@ public class PostgreSQLLayer implements DBLayer {
         
         static final String GET_USER_BY_NAME =
                 "SELECT * FROM rateapp_users WHERE username = ?;";
+        
+        static final String GET_ALL_MOVIES = 
+                "SELECT * FROM rateapp_movies;";
     }
     
     private static final String DATABASE_LOOKUP_NAME = 
@@ -201,6 +205,11 @@ public class PostgreSQLLayer implements DBLayer {
     }
 
     @Override
+    public List<Rating> getUsersRatings(User user) {
+        return null;
+    }
+    
+    @Override
     public User getUserByNickname(String nickname) {
         final Connection connection = openConnection();
         
@@ -236,7 +245,32 @@ public class PostgreSQLLayer implements DBLayer {
     }
     
     public List<Movie> getAllMovies() {
-        return null;
+        final Connection connection = openConnection();
+        
+        if (connection == null) {
+            return null;
+        }
+        
+        final Statement statement = getStatement(connection);
+        
+        if (statement == null) {
+            close(connection);
+            return null;
+        }
+        
+        try {
+            final ResultSet rs = statement.executeQuery(SQL.GET_ALL_MOVIES);
+            final List<Movie> movieList = extractMovies(rs);
+            close(rs);
+            close(statement);
+            close(connection);
+            return movieList;
+        } catch (final SQLException sqle) {
+            sqle.printStackTrace(System.err);
+            close(statement);
+            close(connection);
+            return null;
+        }
     }
     
     public List<User> getAllUsers() {
@@ -254,14 +288,6 @@ public class PostgreSQLLayer implements DBLayer {
         } catch (final SQLException sqle) {
             sqle.printStackTrace(System.err);
             return null;
-        }
-    }
-    
-    private void close(final Connection connection) {
-        try {
-            connection.close();
-        } catch (final SQLException sqle) {
-            sqle.printStackTrace(System.err);
         }
     }
     
@@ -284,7 +310,23 @@ public class PostgreSQLLayer implements DBLayer {
         }
     }
     
+    private void close(final Connection connection) {
+        if (connection == null) {
+            return;
+        }
+        
+        try {
+            connection.close();
+        } catch (final SQLException sqle) {
+            sqle.printStackTrace(System.err);
+        }
+    }
+    
     private void close(final Statement statement) {
+        if (statement == null) {
+            return;
+        }
+        
         try {
             statement.close();
         } catch (final SQLException sqle) {
@@ -293,10 +335,50 @@ public class PostgreSQLLayer implements DBLayer {
     }
     
     private void close(final ResultSet rs) {
+        if (rs == null) {
+            return;
+        }
+        
         try {
             rs.close();
         } catch (final SQLException sqle) {
             sqle.printStackTrace(System.err);
+        }
+    }
+    
+    private static List<Movie> extractMovies(final ResultSet rs) {
+        try {
+            final List<Movie> movieList = new ArrayList<Movie>();
+            
+            while (rs.next()) {
+                final int movieId = rs.getInt(1);
+                final String movieTitle = rs.getString(2);
+                final Date movieRelease = rs.getDate(3);
+                final Date movieVideoRelease = rs.getDate(4);
+                final String movieUrl = rs.getString(5);
+                final String movieGenresRaw = rs.getString(6);
+                
+                final boolean[] genreFlags = 
+                        new boolean[movieGenresRaw.length()];
+                
+                for (int i = 0; i < movieGenresRaw.length(); ++i) {
+                    if (movieGenresRaw.charAt(i) != '0') {
+                        genreFlags[i] = true;
+                    }
+                }
+                
+                movieList.add(new Movie(movieId,
+                                        movieTitle,
+                                        movieRelease,
+                                        movieVideoRelease,
+                                        movieUrl,
+                                        genreFlags));
+            }
+            
+            return movieList;
+        } catch (final SQLException sqle) {
+            sqle.printStackTrace(System.err);
+            return null;
         }
     }
     

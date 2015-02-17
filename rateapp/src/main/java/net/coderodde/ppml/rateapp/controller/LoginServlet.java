@@ -2,6 +2,7 @@ package net.coderodde.ppml.rateapp.controller;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
@@ -9,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import net.coderodde.ppml.rateapp.db.DBLayer;
 import net.coderodde.ppml.rateapp.db.support.PostgreSQLLayer;
+import net.coderodde.ppml.rateapp.model.Movie;
 import net.coderodde.ppml.rateapp.model.User;
 
 /**
@@ -46,27 +48,34 @@ public class LoginServlet extends HttpServlet {
         final ServletOutputStream os = response.getOutputStream();
         
         if (user == null) {
+            // User with nickname is not in the DB. Try adding.
             final User u = new User(0,
                                     nickname,
                                     -1,
                                     User.Gender.UNKNOWN,
                                     "N/A",
                                     "N/A");
+            
             final boolean added = dbl.addUserByName(u);
             
-            os.println("Added to DB: " + added);
+            os.println("Added to DB: " + added + ".<br>");
             
             user = dbl.getUserByNickname(nickname);
             
             if (user != null) {
-                os.println("User created: " + user);
+                os.println("User created!<br>");
             } else {
-                os.println("fdsafds!!");
+                os.println("DB refused to create a user!<br>");
             }
         } else {
-            os.println("User alread exists: " + user);
+            os.println("User alread exists!<br>");
         }
         
+        // Show the list of all movies with the facilities for rating.
+        
+        final List<Movie> movieList = dbl.getAllMovies();
+        
+        os.println("Got " + movieList.size() + " movies from DB!");
     }
 
     /**
