@@ -11,8 +11,17 @@
         
         <form action="rate" method="post">
             <c:forEach var="movieAndRating" items="${requestScope.movieAndRatingList}">
-                <c:out value="${movieAndRating.movie.movieTitle}<br>" />
+                <c:out value="${movieAndRating.movie.movieTitle}" />
+                <select name="score_${movieAndRating.movie.movieID}">
+                    <option value="five">5</option>
+                    <option value="four">4</option>
+                    <option value="three">3</option>
+                    <option value="two">2</option>
+                    <option value="one">1</option>
+                    <option value="none">No rating</option>
+                </select>
             </c:forEach>
+            <input type="submit" value="Rate!">
         </form>
     </body>
 </html>
