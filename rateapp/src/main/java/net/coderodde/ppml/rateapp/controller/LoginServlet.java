@@ -70,6 +70,7 @@ public class LoginServlet extends HttpServlet {
                 return;
             }
         }
+        
         final List<Movie> movieList = dbl.getAllMovies();
         final List<Rating> ratingList = dbl.getUsersRatings(user);
         final List<MovieAndRating> marList = 
@@ -96,6 +97,7 @@ public class LoginServlet extends HttpServlet {
         
         Collections.sort(marList, new MovieTitleComparator());
         request.setAttribute("movieAndRatingList", marList);
+        request.setAttribute("userid", user.getUserID());
         request.getRequestDispatcher("rate.jsp").forward(request, response);
     }
 

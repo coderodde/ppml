@@ -1,4 +1,7 @@
 .DS_Store
+*.aux
+*.log
+*.synctex.gz
 /DateFormatTest/nbproject/private/
 /DateFormatTest/build/
 /DateFormatTest/dist/

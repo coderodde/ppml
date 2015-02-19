@@ -25,6 +25,7 @@
                 </tr>
             </c:forEach>
             </table>
+            <input type="hidden" name="userid" value="${userid}" />
             <input type="submit" value="Rate!">
         </form>
     </body>
