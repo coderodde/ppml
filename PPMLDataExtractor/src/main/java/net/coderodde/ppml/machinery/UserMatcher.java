@@ -16,7 +16,6 @@ import net.coderodde.ppml.model.User;
 /**
  * This class is responsible for finding <tt>k</tt> nearest users to a given
  * user.
- * 
  */
 public class UserMatcher {
 
@@ -88,7 +87,6 @@ public class UserMatcher {
             
             if (heap.size() > amount) {
                 // Keep only 'amount' hottest users!
-                
                 heap.extractMinimum();
             }
         }

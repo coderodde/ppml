@@ -1,7 +1,6 @@
 package net.coderodde.ppml.rateapp.controller;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -9,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -21,7 +19,7 @@ import net.coderodde.ppml.rateapp.model.Rating;
 import net.coderodde.ppml.rateapp.model.User;
 
 /**
- * This servlet is responsible for logging a user in. After the request, this
+ * This servlet is responsible for logging a user in. After the request, the
  * servlet shows the list of all movies for the user to rate. However, if the 
  * user already exists, the presented movie list also shows all the previous
  * ratings the user has created.
@@ -97,7 +95,7 @@ public class LoginServlet extends HttpServlet {
         
         Collections.sort(marList, new MovieTitleComparator());
         request.setAttribute("movieAndRatingList", marList);
-        request.setAttribute("userid", user.getUserID());
+        request.setAttribute("username", user.getUserName());
         request.getRequestDispatcher("rate.jsp").forward(request, response);
     }
 
