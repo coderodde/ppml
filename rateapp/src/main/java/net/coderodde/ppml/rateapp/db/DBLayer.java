@@ -51,6 +51,8 @@ public interface DBLayer {
     
     public List<Rating> getUsersRatings(final User user);
     
+    public Movie getMovieById(final int id);
+    
     public Boolean hasRating(final Rating rating);
     
     public boolean updateRating(final Rating rating);

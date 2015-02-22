@@ -1,6 +1,8 @@
 package net.coderodde.ppml.rateapp.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -12,9 +14,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import net.coderodde.ppml.machinery.UserMatcher;
+import net.coderodde.ppml.rateapp.controller.LoginServlet.MovieTitleComparator;
 import net.coderodde.ppml.rateapp.db.DBLayer;
 import net.coderodde.ppml.rateapp.db.support.PostgreSQLLayer;
 import net.coderodde.ppml.rateapp.model.Movie;
+import net.coderodde.ppml.rateapp.model.MovieAndRating;
 import net.coderodde.ppml.rateapp.model.Rating;
 import net.coderodde.ppml.rateapp.model.User;
 
@@ -89,12 +93,32 @@ public class RecommenderServlet extends HttpServlet {
                                       NEIGHBOR_AMOUNT,
                                       MAX_RECOMMENDATIONS);
         
+        request.setAttribute("rated_movies", 
+                             getMovieAndRatingsOfUser(user, dbl));
         request.setAttribute("recommended_movies", recommendedMovieList);
         request.setAttribute("username", user.getUserName());
         request.getRequestDispatcher("recommend.jsp")
                .forward(request, response);
     }
 
+    private List<MovieAndRating> getMovieAndRatingsOfUser(final User user,
+                                                          final DBLayer dbl) {
+        final List<Rating> ratingList = dbl.getUsersRatings(user);
+        final List<MovieAndRating> movieAndRatingList = 
+                new ArrayList<MovieAndRating>(ratingList.size());
+        
+        for (int i = 0; i < ratingList.size(); ++i) {
+            final Rating rating = ratingList.get(i);
+            final MovieAndRating mar = 
+                    new MovieAndRating(dbl.getMovieById(rating.getItemID()),
+                                       rating);
+            movieAndRatingList.add(mar);
+        }
+        
+        Collections.sort(movieAndRatingList, new MovieTitleComparator());
+        return movieAndRatingList;
+    }
+    
     /**
      * Handles the HTTP <code>GET</code> method.
      *

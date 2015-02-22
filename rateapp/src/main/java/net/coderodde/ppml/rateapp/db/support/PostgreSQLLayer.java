@@ -51,6 +51,9 @@ public class PostgreSQLLayer implements DBLayer {
         static final String GET_USERS_RATINGS =
                 "SELECT * FROM rateapp_ratings WHERE user_id = ?;";
         
+        static final String GET_MOVIE_BY_ID =
+                "SELECT * FROM rateapp_movies WHERE movie_id = ?;";
+        
         static final String REMOVE_RATING = 
                 "DELETE FROM rateapp_ratings " +
                 "WHERE user_id = ? AND movie_id = ?;";
@@ -408,6 +411,38 @@ public class PostgreSQLLayer implements DBLayer {
     }
     
     @Override
+    public Movie getMovieById(final int id) {
+        final Connection connection = openConnection();
+        
+        if (connection == null) {
+            return null;
+        }
+        
+        final PreparedStatement ps = getPreparedStatement(connection,
+                                                          SQL.GET_MOVIE_BY_ID);
+        
+        if (ps == null) {
+            close(connection);
+            return null;
+        }
+        
+        try {
+            ps.setInt(1, id);
+            final ResultSet rs = ps.executeQuery();
+            final Movie movie = extractMovie(rs);
+            
+            close(rs);
+            return movie;
+        } catch (final SQLException sqle) {
+            sqle.printStackTrace(System.err);
+            return null;
+        } finally {
+            close(ps);
+            close(connection);
+        }
+    }
+    
+    @Override
     public List<Movie> getAllMovies() {
         final Connection connection = openConnection();
         
@@ -610,6 +645,53 @@ public class PostgreSQLLayer implements DBLayer {
                 userList.add(user);
             }
             return userList;
+        } catch (final SQLException sqle) {
+            sqle.printStackTrace(System.err);
+            return null;
+        }
+    }
+    
+    private static Movie extractMovie(final ResultSet rs) {
+        try {
+            if (!rs.next()) {
+                return null;
+            }
+            
+            final int movieId = rs.getInt(1);
+            final String movieTitle = rs.getString(2);
+            
+            final java.sql.Date dateRelease = rs.getDate(3);
+            
+            final Date actualDateRelease = 
+                    dateRelease != null ? 
+                    new Date(dateRelease.getTime()) : 
+                    null;
+            
+            final java.sql.Date dateVideoRelease = rs.getDate(4);
+                    
+            final Date actualDateVideoRelease =
+                    dateVideoRelease != null ?
+                    new Date(dateVideoRelease.getTime()) :
+                    null;
+            
+            final String movieUrl = rs.getString(5);
+            final String movieGenresRaw = rs.getString(6);
+            
+            final boolean[] genreFlags =
+                    new boolean[movieGenresRaw.length()];
+            
+            for (int i = 0; i < movieGenresRaw.length(); ++i) {
+                if (movieGenresRaw.charAt(i) != '0') {
+                    genreFlags[i] = true;
+                }
+            }
+            
+            return new Movie(movieId,
+                             movieTitle,
+                             actualDateRelease,
+                             actualDateVideoRelease,
+                             movieUrl,
+                             genreFlags);
         } catch (final SQLException sqle) {
             sqle.printStackTrace(System.err);
             return null;

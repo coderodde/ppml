@@ -100,7 +100,7 @@ public class LoginServlet extends HttpServlet {
         request.getRequestDispatcher("rate.jsp").forward(request, response);
     }
 
-    private static class MovieTitleComparator 
+    static class MovieTitleComparator 
     implements Comparator<MovieAndRating> {
 
         /**

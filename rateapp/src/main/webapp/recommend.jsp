@@ -7,6 +7,12 @@
         <title>rateapp | recommendations</title>
     </head>
     <body>
+        <h1>Your ratings:</h1>
+        <ul>
+            <c:forEach var="movieAndRating" items="${rated_movies}">
+                <li><c:out value="${movieAndRating.movie.movieTitle} Score: ${movieAndRating.rating.score}"/></li>
+            </c:forEach>
+        </ul>
         <h1>Recommended for you, ${username}!</h1>
         <ul>
             <c:forEach var="movie" items="${requestScope.recommended_movies}">
