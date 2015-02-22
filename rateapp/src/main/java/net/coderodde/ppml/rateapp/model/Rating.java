@@ -60,8 +60,9 @@ public class Rating {
             && getItemID() == other.getItemID();
     }
     
+    @Override
     public int hashCode() {
-        return Integer.hashCode(userId ^ movieId);
+        return userId ^ movieId;
     }
     
     public int getUserID() {
@@ -79,8 +80,6 @@ public class Rating {
     public long getTimestamp() {
         return timestamp;
     }
-    
-    
     
     @Override
     public String toString() {
