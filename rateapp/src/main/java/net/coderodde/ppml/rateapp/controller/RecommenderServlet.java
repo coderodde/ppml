@@ -139,6 +139,11 @@ public class RecommenderServlet extends HttpServlet {
         
         while (enumeration.hasMoreElements()) {
             final String parameter = enumeration.nextElement();
+            
+            if (!parameter.contains("score")) {
+                continue;
+            }
+            
             final int movieId = 
                     Integer.parseInt(parameter.split("_")[1]);
             final int score = mapTextToScore
