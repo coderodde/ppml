@@ -10,6 +10,7 @@
         <h1>Rate your favorite movies!</h1>
 
         <form action="rate" method="post">
+            <input type="submit" value="Rate!">
             <table>
                 <c:forEach var="movieAndRating" items="${requestScope.movieAndRatingList}">
                     <tr>

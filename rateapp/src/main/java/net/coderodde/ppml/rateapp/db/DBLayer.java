@@ -49,6 +49,8 @@ public interface DBLayer {
     
     public List<Rating> getUsersRatings(final User user);
     
+    public Boolean hasRating(final Rating rating);
+    
     public boolean updateRating(final Rating rating);
     
     public boolean removeRating(final Rating rating);

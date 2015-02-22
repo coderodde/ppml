@@ -53,6 +53,10 @@ public class PostgreSQLLayer implements DBLayer {
                 "UPDATE rateapp_ratings SET " + 
                 "score = ?, timestamp = ? " +
                 "WHERE user_id = ? AND movie_id = ?;";
+        
+        static final String HAS_RATING = 
+                "SELECT COUNT(*) FROM rateapp_ratings " +
+                "WHERE user_id = ? AND movie_id = ?;";
     }
     
     private static final String DATABASE_LOOKUP_NAME = 
@@ -230,6 +234,43 @@ public class PostgreSQLLayer implements DBLayer {
         }
     }
 
+    @Override
+    public Boolean hasRating(Rating rating) {
+        final Connection connection = openConnection();
+        
+        if (connection == null) {
+            return null;
+        }
+        
+        final PreparedStatement ps = 
+                getPreparedStatement(connection, SQL.HAS_RATING);
+        
+        if (ps == null) {
+            close(connection);
+            return null;
+        }
+        
+        try {
+            ps.setInt(1, rating.getUserID());
+            ps.setInt(2, rating.getItemID());
+            
+            final ResultSet rs = ps.executeQuery();
+            
+            rs.next();
+            
+            int count = rs.getInt(1);
+            
+            close(rs);
+            
+            return count > 0;
+        } catch (final SQLException sqle) {
+            sqle.printStackTrace(System.err);
+            return null;
+        } finally {
+            close(ps);
+            close(connection);
+        }
+    }
     
     @Override
     public boolean updateRating(Rating rating) {

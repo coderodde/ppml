@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.servlet.ServletException;
@@ -54,29 +53,45 @@ public class RecommenderServlet extends HttpServlet {
         final Map<Rating, Rating> inputRatingMap = 
                 getRatingMapFromRequest(request, user);
         
-        final Set<Rating> dbRatingSet = 
-                new HashSet<Rating>(dbl.getUsersRatings(user));
-        
-        for (final Rating rating : dbRatingSet) {
-            final Rating inputRating = inputRatingMap.get(rating);
-            
-            if (inputRating == null) {
-                // The rating is in the DB, but not in the request. Do none.
-                continue;
-            }
-            
-            if (inputRating.getScore() != rating.getScore()) {
-                // The rating is present in both DB and request, and the score
-                // has changed. Update the rating.
-                if (inputRating.getScore() == Rating.NOT_RATED) {
-                    // The user is undoing its rating.
+        for (final Rating rating : inputRatingMap.keySet()) {
+            if (rating.getScore() == Rating.NOT_RATED) {
+                if (dbl.hasRating(rating)) {
+                    // The user wants to remove the current rating.
                     dbl.removeRating(rating);
+                }
+            } else {
+                // The input rating has a non-zero score.
+                if (dbl.hasRating(rating)) {
+                    dbl.updateRating(rating);
                 } else {
-                    // The user changing the score.
-                    dbl.updateRating(inputRating);
+                    dbl.addRating(rating);
                 }
             }
         }
+        
+//        final Set<Rating> dbRatingSet = 
+//                new HashSet<Rating>(dbl.getUsersRatings(user));
+//        
+//        for (final Rating rating : dbRatingSet) {
+//            final Rating inputRating = inputRatingMap.get(rating);
+//            
+//            if (inputRating == null) {
+//                // The rating is in the DB, but not in the request. Do none.
+//                continue;
+//            }
+//            
+//            if (inputRating.getScore() != rating.getScore()) {
+//                // The rating is present in both DB and request, and the score
+//                // has changed. Update the rating.
+//                if (inputRating.getScore() == Rating.NOT_RATED) {
+//                    // The user is undoing its rating.
+//                    dbl.removeRating(rating);
+//                } else {
+//                    // The user changing the score.
+//                    dbl.updateRating(inputRating);
+//                }
+//            }
+//        }
         
         request.setAttribute("username", user.getUserName());
         request.getRequestDispatcher("recommend.jsp")
