@@ -302,6 +302,7 @@ public class PostgreSQLLayer implements DBLayer {
             ps.setLong(2, rating.getTimestamp());
             ps.setInt(3, rating.getUserID());
             ps.setInt(4, rating.getItemID());
+            ps.executeUpdate();
             return true;
         } catch (final SQLException sqle) {
             sqle.printStackTrace(System.err);
