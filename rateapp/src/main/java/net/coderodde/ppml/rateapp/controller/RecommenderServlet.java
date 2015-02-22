@@ -47,8 +47,9 @@ public class RecommenderServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         final DBLayer dbl = new PostgreSQLLayer();
-        final User user = dbl.getUserByNickname(
-                (String) request.getAttribute("username"));
+        
+        final User user = 
+                dbl.getUserByNickname(request.getParameter("username"));
         
         final Map<Rating, Rating> inputRatingMap = 
                 getRatingMapFromRequest(request, user);
@@ -132,6 +133,7 @@ public class RecommenderServlet extends HttpServlet {
     private Map<Rating, Rating> 
         getRatingMapFromRequest(final HttpServletRequest request,
                                 final User user) {
+            
         final Enumeration<String> enumeration = request.getAttributeNames();
         final Map<Rating, Rating> ratingMap = new HashMap<Rating, Rating>();
         final int userId = user.getUserID();
