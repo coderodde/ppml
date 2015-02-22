@@ -14,7 +14,18 @@
             <c:forEach var="movieAndRating" items="${requestScope.movieAndRatingList}">
                 <tr>
                 <td><c:out value="${movieAndRating.movie.movieTitle}" /></td>
-                <td><select name="score_${movieAndRating.movie.movieID}">
+                <td>
+                    <c:choose>
+                        <c:when test="${false}">
+                            True!
+                        </c:when>
+                            
+                        <c:otherwise>
+                            False!
+                        </c:otherwise>
+                    </c:choose>
+                    <select name="score_${movieAndRating.movie.movieID}">
+                     
                     <option value="five"  <c:if test="movieAndRating.rating != null && movieAndRating.rating.score == 5"> selected </c:if>>5</option>
                     <option value="four"  <c:if test="movieAndRating.rating != null && movieAndRating.rating.score == 4"> selected </c:if>>4</option>
                     <option value="three" <c:if test="movieAndRating.rating != null && movieAndRating.rating.score == 3"> selected </c:if>>3</option>
