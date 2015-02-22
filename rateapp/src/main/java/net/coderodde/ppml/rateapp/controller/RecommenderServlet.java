@@ -54,8 +54,8 @@ public class RecommenderServlet extends HttpServlet {
         final Map<Rating, Rating> inputRatingMap = 
                 getRatingMapFromRequest(request, user);
         
-        final List<Rating> dbUsersRatingList = dbl.getUsersRatings(user);
-        final Set<Rating> dbRatingSet = new HashSet<Rating>(dbUsersRatingList);
+        final Set<Rating> dbRatingSet = 
+                new HashSet<Rating>(dbl.getUsersRatings(user));
         
         for (final Rating rating : dbRatingSet) {
             final Rating inputRating = inputRatingMap.get(rating);
@@ -133,8 +133,7 @@ public class RecommenderServlet extends HttpServlet {
     private Map<Rating, Rating> 
         getRatingMapFromRequest(final HttpServletRequest request,
                                 final User user) {
-            
-        final Enumeration<String> enumeration = request.getAttributeNames();
+        final Enumeration<String> enumeration = request.getParameterNames();
         final Map<Rating, Rating> ratingMap = new HashMap<Rating, Rating>();
         final int userId = user.getUserID();
         
