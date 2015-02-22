@@ -69,8 +69,10 @@ public class RecommenderServlet extends HttpServlet {
                 // has changed. Update the rating.
                 if (inputRating.getScore() == Rating.NOT_RATED) {
                     // The user is undoing its rating.
+                    dbl.removeRating(rating);
                 } else {
-                    
+                    // The user changing the score.
+                    dbl.updateRating(inputRating);
                 }
             }
         }

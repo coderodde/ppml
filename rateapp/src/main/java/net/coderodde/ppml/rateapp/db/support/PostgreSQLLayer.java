@@ -247,7 +247,19 @@ public class PostgreSQLLayer implements DBLayer {
             return false;
         }
         
-        return true;
+        try {
+            ps.setInt(1, rating.getScore());
+            ps.setLong(2, rating.getTimestamp());
+            ps.setInt(3, rating.getUserID());
+            ps.setInt(4, rating.getItemID());
+            return true;
+        } catch (final SQLException sqle) {
+            sqle.printStackTrace(System.err);
+            return false;
+        } finally {
+            close(ps);
+            close(connection);
+        }
     }
 
     @Override
@@ -271,14 +283,13 @@ public class PostgreSQLLayer implements DBLayer {
             ps.setInt(2, rating.getItemID());
             
             ps.executeUpdate();
-            
-            close(ps);
-            close(connection);
             return true;
         } catch (final SQLException sqle) {
+            sqle.printStackTrace(System.err);
+            return false;
+        } finally {
             close(ps);
             close(connection);
-            return false;
         }
     }
     
