@@ -138,11 +138,11 @@ public class RecommenderServlet extends HttpServlet {
         final int userId = user.getUserID();
         
         while (enumeration.hasMoreElements()) {
-            final String attribute = enumeration.nextElement();
+            final String parameter = enumeration.nextElement();
             final int movieId = 
-                    Integer.parseInt(attribute.split("_")[1]);
+                    Integer.parseInt(parameter.split("_")[1]);
             final int score = mapTextToScore
-                              .get(request.getAttribute(attribute));
+                              .get(request.getParameter(parameter));
             final Rating rating = 
                     new Rating(userId,
                                movieId,
