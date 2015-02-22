@@ -96,16 +96,42 @@ public class LoginServlet extends HttpServlet {
         Collections.sort(marList, new MovieTitleComparator());
         request.setAttribute("movieAndRatingList", marList);
         request.setAttribute("username", user.getUserName());
+        request.setAttribute("userid", user.getUserID());
         request.getRequestDispatcher("rate.jsp").forward(request, response);
     }
 
     private static class MovieTitleComparator 
     implements Comparator<MovieAndRating> {
 
+        /**
+         * This method makes sure that movie and rating tuples are sorted in two
+         * categories: the first consist of movies that have a rating, the 
+         * second consists of movies without ratings. Within both the
+         * categories, movies are sorted by titles.
+         * 
+         * @param  o1 the first movie/rating-tuple.
+         * @param  o2 the second movie/rating-tuple.
+         * @return an integer indicating the order.
+         */
         @Override
         public int compare(MovieAndRating o1, MovieAndRating o2) {
-            return o1.getMovie().getMovieTitle()
-                     .compareTo(o2.getMovie().getMovieTitle());
+            final int ret = o1.getMovie().getMovieTitle()
+                              .compareTo(o2.getMovie().getMovieTitle());
+            
+            if (o1.getRating() != null) {
+                if (o2.getRating() == null) {
+                    return -1;
+                } else {
+                    return ret;
+                }
+            } else {
+                // Once here, o1 has no rating.
+                if (o2.getRating() != null) {
+                    return 1;
+                } else {
+                    return ret;
+                }
+            }
         }
     }
     

@@ -48,4 +48,8 @@ public interface DBLayer {
     public List<Movie> getAllMovies();
     
     public List<Rating> getUsersRatings(final User user);
+    
+    public boolean updateRating(final Rating rating);
+    
+    public boolean removeRating(final Rating rating);
 }

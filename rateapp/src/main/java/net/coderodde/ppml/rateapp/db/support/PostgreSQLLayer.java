@@ -44,11 +44,32 @@ public class PostgreSQLLayer implements DBLayer {
         
         static final String GET_USERS_RATINGS =
                 "SELECT * FROM rateapp_ratings WHERE user_id = ?;";
+        
+        static final String REMOVE_RATING = 
+                "DELETE FROM rateapp_ratings " +
+                "WHERE user_id = ? AND movie_id = ?;";
+        
+        static final String UPDATE_RATING =
+                "UPDATE rateapp_ratings SET " + 
+                "score = ?, timestamp = ? " +
+                "WHERE user_id = ? AND movie_id = ?;";
     }
     
     private static final String DATABASE_LOOKUP_NAME = 
             "java:/comp/env/jdbc/rateappdb";
     
+    private final DataSource dataSource;
+    
+    public PostgreSQLLayer() {
+        try {
+            final InitialContext ctx = new InitialContext();
+            this.dataSource = (DataSource) ctx.lookup(DATABASE_LOOKUP_NAME);
+        } catch (final NamingException ne) {
+            throw new RuntimeException("Could not initialize the data source.");
+        }  
+    }
+    
+    @Override
     public boolean addUser(final User user) {
         final Connection connection = openConnection();
         
@@ -119,6 +140,7 @@ public class PostgreSQLLayer implements DBLayer {
         }   
     }
     
+    @Override
     public boolean addMovie(Movie movie) {
         final Connection connection = openConnection();
         
@@ -175,6 +197,7 @@ public class PostgreSQLLayer implements DBLayer {
         }
     }
 
+    @Override
     public boolean addRating(Rating rating) {
         final Connection connection = openConnection();
         
@@ -207,6 +230,58 @@ public class PostgreSQLLayer implements DBLayer {
         }
     }
 
+    
+    @Override
+    public boolean updateRating(Rating rating) {
+        final Connection connection = openConnection();
+        
+        if (connection == null) {
+            return false;
+        }
+        
+        final PreparedStatement ps = 
+                getPreparedStatement(connection, SQL.UPDATE_RATING);
+        
+        if (ps == null) {
+            close(connection);
+            return false;
+        }
+        
+        return true;
+    }
+
+    @Override
+    public boolean removeRating(Rating rating) {
+        final Connection connection = openConnection();
+        
+        if (connection == null) {
+            return false;
+        }
+    
+        final PreparedStatement ps =
+                getPreparedStatement(connection, SQL.REMOVE_RATING);
+        
+        if (ps == null) {
+            close(connection);
+            return false;
+        }
+        
+        try {
+            ps.setInt(1, rating.getUserID());
+            ps.setInt(2, rating.getItemID());
+            
+            ps.executeUpdate();
+            
+            close(ps);
+            close(connection);
+            return true;
+        } catch (final SQLException sqle) {
+            close(ps);
+            close(connection);
+            return false;
+        }
+    }
+    
     @Override
     public List<Rating> getUsersRatings(User user) {
         final Connection connection = openConnection();
@@ -274,6 +349,7 @@ public class PostgreSQLLayer implements DBLayer {
         }
     }
     
+    @Override
     public List<Movie> getAllMovies() {
         final Connection connection = openConnection();
         
@@ -303,18 +379,14 @@ public class PostgreSQLLayer implements DBLayer {
         }
     }
     
+    @Override
     public List<User> getAllUsers() {
         return null;
     }
     
     private Connection openConnection() {
         try {
-            final InitialContext ctx = new InitialContext();
-            final DataSource ds = (DataSource) ctx.lookup(DATABASE_LOOKUP_NAME);
-            return ds.getConnection();
-        } catch (final NamingException ne) {
-            ne.printStackTrace(System.err);
-            return null;
+            return dataSource.getConnection();
         } catch (final SQLException sqle) {
             sqle.printStackTrace(System.err);
             return null;

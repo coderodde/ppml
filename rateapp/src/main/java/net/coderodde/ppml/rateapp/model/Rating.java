@@ -8,6 +8,8 @@ package net.coderodde.ppml.rateapp.model;
  */
 public class Rating {
 
+    public static final int NOT_RATED = 0;
+    
     /**
      * The user ID of a user.
      */
@@ -19,14 +21,13 @@ public class Rating {
     private final int movieId;
     
     /**
-     * The score of this rating. It is up to the client programmer to decide
-     * what is the rating scale.
+     * The score of this rating.
      */
     private final int score;
     
     /**
-     * The timestamp of this rating. It is up to the client programmer to decide
-     * how this timestamp is interpreted.
+     * The timestamp of this rating. It is the amount of seconds since the 
+     * Unix epoch (Jan 1, 1970).
      */
     private final long timestamp;
     
@@ -78,6 +79,8 @@ public class Rating {
     public long getTimestamp() {
         return timestamp;
     }
+    
+    
     
     @Override
     public String toString() {

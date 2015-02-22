@@ -1,12 +1,19 @@
 package net.coderodde.ppml.rateapp.controller;
 
 import java.io.IOException;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import net.coderodde.ppml.rateapp.db.DBLayer;
 import net.coderodde.ppml.rateapp.db.support.PostgreSQLLayer;
+import net.coderodde.ppml.rateapp.model.Rating;
 import net.coderodde.ppml.rateapp.model.User;
 
 /**
@@ -15,6 +22,19 @@ import net.coderodde.ppml.rateapp.model.User;
  */
 public class RecommenderServlet extends HttpServlet {
 
+    private static final Map<String, Integer> mapTextToScore;
+    
+    static {
+        mapTextToScore = new HashMap<String, Integer>();
+        
+        mapTextToScore.put("five",  5);
+        mapTextToScore.put("four",  4);
+        mapTextToScore.put("three", 3);
+        mapTextToScore.put("two",   2);
+        mapTextToScore.put("one",   1);
+        mapTextToScore.put("none",  0);
+    }
+    
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -30,7 +50,34 @@ public class RecommenderServlet extends HttpServlet {
         final User user = dbl.getUserByNickname(
                 (String) request.getAttribute("username"));
         
-        response.getOutputStream().println("User: " + user.getUserName());
+        final Map<Rating, Rating> inputRatingMap = 
+                getRatingMapFromRequest(request, user);
+        
+        final List<Rating> dbUsersRatingList = dbl.getUsersRatings(user);
+        final Set<Rating> dbRatingSet = new HashSet<Rating>(dbUsersRatingList);
+        
+        for (final Rating rating : dbRatingSet) {
+            final Rating inputRating = inputRatingMap.get(rating);
+            
+            if (inputRating == null) {
+                // The rating is in the DB, but not in the request. Do none.
+                continue;
+            }
+            
+            if (inputRating.getScore() != rating.getScore()) {
+                // The rating is present in both DB and request, and the score
+                // has changed. Update the rating.
+                if (inputRating.getScore() == Rating.NOT_RATED) {
+                    // The user is undoing its rating.
+                } else {
+                    
+                }
+            }
+        }
+        
+        request.setAttribute("username", user.getUserName());
+        request.getRequestDispatcher("recommend.jsp")
+               .forward(request, response);
     }
 
     /**
@@ -70,5 +117,38 @@ public class RecommenderServlet extends HttpServlet {
     public String getServletInfo() {
         return "This servlet is responsible for receiving the ratings and " +
                "recommending other movies.";
+    }
+    
+    /**
+     * Returns a map mapping each rating to itself. This can be thought of
+     * like an array indexed by the actual components.
+     * 
+     * @param  request the servlet request containing the attributes.
+     * @param  user    the user whose ratings are being processed.
+     * @return         a map.
+     */
+    private Map<Rating, Rating> 
+        getRatingMapFromRequest(final HttpServletRequest request,
+                                final User user) {
+        final Enumeration<String> enumeration = request.getAttributeNames();
+        final Map<Rating, Rating> ratingMap = new HashMap<Rating, Rating>();
+        final int userId = user.getUserID();
+        
+        while (enumeration.hasMoreElements()) {
+            final String attribute = enumeration.nextElement();
+            final int movieId = 
+                    Integer.parseInt(attribute.split("_")[1]);
+            final int score = mapTextToScore
+                              .get(request.getAttribute(attribute));
+            final Rating rating = 
+                    new Rating(userId,
+                               movieId,
+                               score,
+                               System.currentTimeMillis() / 1000);
+            
+            ratingMap.put(rating, rating);
+        }
+        
+        return ratingMap;
     }
 }
