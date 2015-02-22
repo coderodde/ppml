@@ -7,7 +7,7 @@
         <title>rateapp | rate your movies!</title>
     </head>
     <body>
-        <h1>Rate your favorite movies!</h1>
+        <h1>Rate your favorite movies, ${username}!</h1>
 
         <form action="rate" method="post">
             <input type="submit" value="Rate!">
