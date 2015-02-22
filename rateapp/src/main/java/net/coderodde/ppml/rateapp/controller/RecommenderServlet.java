@@ -4,14 +4,17 @@ import java.io.IOException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import net.coderodde.ppml.machinery.UserMatcher;
 import net.coderodde.ppml.rateapp.db.DBLayer;
 import net.coderodde.ppml.rateapp.db.support.PostgreSQLLayer;
+import net.coderodde.ppml.rateapp.model.Movie;
 import net.coderodde.ppml.rateapp.model.Rating;
 import net.coderodde.ppml.rateapp.model.User;
 
@@ -21,6 +24,10 @@ import net.coderodde.ppml.rateapp.model.User;
  */
 public class RecommenderServlet extends HttpServlet {
 
+    public static final int NEIGHBOR_AMOUNT = 5;
+    
+    public static final int MAX_RECOMMENDATIONS = 5;
+    
     private static final Map<String, Integer> mapTextToScore;
     
     static {
@@ -69,30 +76,20 @@ public class RecommenderServlet extends HttpServlet {
             }
         }
         
-//        final Set<Rating> dbRatingSet = 
-//                new HashSet<Rating>(dbl.getUsersRatings(user));
-//        
-//        for (final Rating rating : dbRatingSet) {
-//            final Rating inputRating = inputRatingMap.get(rating);
-//            
-//            if (inputRating == null) {
-//                // The rating is in the DB, but not in the request. Do none.
-//                continue;
-//            }
-//            
-//            if (inputRating.getScore() != rating.getScore()) {
-//                // The rating is present in both DB and request, and the score
-//                // has changed. Update the rating.
-//                if (inputRating.getScore() == Rating.NOT_RATED) {
-//                    // The user is undoing its rating.
-//                    dbl.removeRating(rating);
-//                } else {
-//                    // The user changing the score.
-//                    dbl.updateRating(inputRating);
-//                }
-//            }
-//        }
+        final List<User> userList = dbl.getAllUsers();
+        final List<Movie> movieList = dbl.getAllMovies();
+        final List<Rating> ratingList = dbl.getAllRatings();
         
+        final UserMatcher um = new UserMatcher(userList,
+                                               movieList,
+                                               ratingList);
+        
+        final List<Movie> recommendedMovieList =
+                um.gerRecommendations(user,
+                                      NEIGHBOR_AMOUNT,
+                                      MAX_RECOMMENDATIONS);
+        
+        request.setAttribute("recommended_movies", recommendedMovieList);
         request.setAttribute("username", user.getUserName());
         request.getRequestDispatcher("recommend.jsp")
                .forward(request, response);

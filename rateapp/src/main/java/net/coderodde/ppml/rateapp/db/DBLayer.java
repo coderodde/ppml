@@ -41,11 +41,13 @@ public interface DBLayer {
     
     public boolean addRating(final Rating rating);
     
-    public List<User> getAllUsers();
-    
     public User getUserByNickname(final String nickname);
     
+    public List<User> getAllUsers();
+    
     public List<Movie> getAllMovies();
+    
+    public List<Rating> getAllRatings();
     
     public List<Rating> getUsersRatings(final User user);
     

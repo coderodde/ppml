@@ -39,8 +39,14 @@ public class PostgreSQLLayer implements DBLayer {
         static final String GET_USER_BY_NAME =
                 "SELECT * FROM rateapp_users WHERE username = ?;";
         
+        static final String GET_ALL_USERS = 
+                "SELECT * FROM rateapp_users;";
+        
         static final String GET_ALL_MOVIES = 
                 "SELECT * FROM rateapp_movies;";
+        
+        static final String GET_ALL_RATINGS =
+                "SELECT * FROM rateapp_ratings;";
         
         static final String GET_USERS_RATINGS =
                 "SELECT * FROM rateapp_ratings WHERE user_id = ?;";
@@ -431,9 +437,63 @@ public class PostgreSQLLayer implements DBLayer {
         }
     }
     
+    
+    @Override
+    public List<Rating> getAllRatings() {
+        final Connection connection = openConnection();
+        
+        if (connection == null) {
+            return null;
+        }
+        
+        final Statement statement = getStatement(connection);
+        
+        if (statement == null) {
+            close(connection);
+            return null;
+        }
+        
+        try {
+            final ResultSet rs = statement.executeQuery(SQL.GET_ALL_RATINGS);
+            final List<Rating> ratingList = extractRatings(rs);
+            close(rs);
+            return ratingList;
+        } catch (final SQLException sqle) {
+            sqle.printStackTrace(System.err);
+            return null;
+        } finally {
+            close(statement);
+            close(connection);
+        }
+    }
+    
     @Override
     public List<User> getAllUsers() {
-        return null;
+        final Connection connection = openConnection();
+        
+        if (connection == null) {
+            return null;
+        }
+        
+        final Statement statement = getStatement(connection);
+        
+        if (statement == null) {
+            close(connection);
+            return null;
+        }
+        
+        try {
+            final ResultSet rs = statement.executeQuery(SQL.GET_ALL_USERS);
+            final List<User> movieList = extractUsers(rs);
+            close(rs);
+            return movieList;
+        } catch (final SQLException sqle) {
+            sqle.printStackTrace(System.err);
+            return null;
+        } finally {
+            close(statement);
+            close(connection);
+        }
     }
     
     private Connection openConnection() {
@@ -514,6 +574,42 @@ public class PostgreSQLLayer implements DBLayer {
             }
             
             return ratingList;
+        } catch (final SQLException sqle) {
+            sqle.printStackTrace(System.err);
+            return null;
+        }
+    }
+    
+    private static List<User> extractUsers(final ResultSet rs) {
+        try {
+            final List<User> userList = new ArrayList<User>();
+            
+            while (rs.next()) {
+                final int userId = rs.getInt(1);
+                final String username = rs.getString(2);
+                final int age = rs.getInt(3);
+                final String gender = rs.getString(4);
+                final String occupation = rs.getString(5);
+                final String zipCode = rs.getString(6);
+                
+                User.Gender g = User.Gender.UNKNOWN;
+                
+                if (gender.equalsIgnoreCase("f")) {
+                    g = User.Gender.FEMALE;
+                } else if (gender.equalsIgnoreCase("m")) {
+                    g = User.Gender.MALE;
+                }
+                
+                final User user = new User(userId,
+                                           username,
+                                           age,
+                                           g,
+                                           occupation,
+                                           zipCode);
+                
+                userList.add(user);
+            }
+            return userList;
         } catch (final SQLException sqle) {
             sqle.printStackTrace(System.err);
             return null;
