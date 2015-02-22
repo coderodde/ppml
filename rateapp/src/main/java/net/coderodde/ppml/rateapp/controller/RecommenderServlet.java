@@ -5,10 +5,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -73,7 +71,9 @@ public class RecommenderServlet extends HttpServlet {
             } else {
                 // The input rating has a non-zero score.
                 if (dbl.hasRating(rating)) {
-                    dbl.updateRating(rating);
+                    if (!dbl.updateRating(rating)) {
+                        response.getOutputStream().println("Could not update.");
+                    }
                 } else {
                     dbl.addRating(rating);
                 }
@@ -89,7 +89,7 @@ public class RecommenderServlet extends HttpServlet {
                                                ratingList);
         
         final List<Movie> recommendedMovieList =
-                um.gerRecommendations(user,
+                um.getRecommendations(user,
                                       NEIGHBOR_AMOUNT,
                                       MAX_RECOMMENDATIONS);
         

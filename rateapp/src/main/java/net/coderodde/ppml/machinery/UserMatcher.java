@@ -110,7 +110,7 @@ public class UserMatcher {
      * 
      * @return a list of recommended movies.
      */
-    public List<Movie> gerRecommendations(final User target,
+    public List<Movie> getRecommendations(final User target,
                                           final int neighborAmount,
                                           final int maxRecommendations) {
         final List<User> neighborList = match(target, neighborAmount);
