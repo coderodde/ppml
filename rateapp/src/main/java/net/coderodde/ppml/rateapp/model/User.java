@@ -88,7 +88,7 @@ public class User {
     
     @Override
     public int hashCode() {
-        return Integer.hashCode(userId);
+        return userId;
     }
     
     @Override
