@@ -19,7 +19,7 @@ public class App {
     private static final String GENRE_FILE_NAME = "u.genre";
     
     public static void main(final String... args) {
-        final long seed = System.currentTimeMillis();
+        final long seed = 111L;//System.currentTimeMillis();
         final Random rnd = new Random(seed);
         
         System.out.println("Seed: " + seed);

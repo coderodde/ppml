@@ -1,5 +1,6 @@
 package net.coderodde.ppml.rateapp.controller;
 
+import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -91,6 +92,19 @@ public class RecommenderServlet extends HttpServlet {
                                       NEIGHBOR_AMOUNT,
                                       MAX_RECOMMENDATIONS);
         
+        final List<User> neighborsList = um.match(user, NEIGHBOR_AMOUNT);
+        final List<Float> distancesList = 
+                new ArrayList<Float>(neighborsList.size());
+        
+        final List<Point2D.Float> someList = 
+                new ArrayList<Point2D.Float>(neighborsList.size());
+        
+        for (int i = 0; i < neighborsList.size(); ++i) {
+            someList.add(new Point2D.Float(neighborsList.get(i).getUserID(),
+                                           distancesList.get(i)));
+        }
+        
+        request.setAttribute("data_list", someList);
         request.setAttribute("rated_movies", 
                              getMovieAndRatingsOfUser(user, dbl));
         request.setAttribute("recommended_movies", recommendedMovieList);

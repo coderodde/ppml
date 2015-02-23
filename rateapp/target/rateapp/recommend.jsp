@@ -7,6 +7,13 @@
         <title>rateapp | recommendations</title>
     </head>
     <body>
+        <h3>Closest users:</h3>
+        <ul>
+            <c:forEach var="item" items="${data_list}">
+                <li><c:out value="${item.x} Distance: ${item.y}"/></li>
+            </c:forEach>
+        </ul>
+        
         <h1>Your ratings:</h1>
         <ul>
             <c:forEach var="movieAndRating" items="${rated_movies}">
