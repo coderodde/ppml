@@ -93,15 +93,14 @@ public class RecommenderServlet extends HttpServlet {
                                       MAX_RECOMMENDATIONS);
         
         final List<User> neighborsList = um.match(user, NEIGHBOR_AMOUNT);
-        final List<Float> distancesList = 
-                new ArrayList<Float>(neighborsList.size());
-        
         final List<Point2D.Float> someList = 
                 new ArrayList<Point2D.Float>(neighborsList.size());
         
         for (int i = 0; i < neighborsList.size(); ++i) {
-            someList.add(new Point2D.Float(neighborsList.get(i).getUserID(),
-                                           distancesList.get(i)));
+            final User neighbor = neighborsList.get(i);
+            someList.add(new Point2D.Float(neighbor.getUserID(),
+                                           um.jaccardCoefficient(neighbor, 
+                                                                 user)));
         }
         
         request.setAttribute("data_list", someList);
