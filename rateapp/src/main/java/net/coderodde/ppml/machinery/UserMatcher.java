@@ -115,7 +115,7 @@ public class UserMatcher {
                                           final int maxRecommendations) {
         final List<User> neighborList = match(target, neighborAmount);
         
-        final Map<Movie, Integer> mapMovieToRatingScore = 
+        final Map<Movie, Integer> mapMovieToRatingScoreSum = 
                 new HashMap<Movie, Integer>();
         
         final Map<Movie, Integer> mapMovieToRatingAmount = 
@@ -128,18 +128,18 @@ public class UserMatcher {
             for (final Movie movie : neighborsMovieSet) {
                 if (!mapMovieToRatingAmount.containsKey(movie)) {
                     mapMovieToRatingAmount.put(movie, 1);
-                    mapMovieToRatingScore.put(movie,
-                                              mapUserMovieToRating
-                                              .get(neighbor)
-                                              .get(movie).getScore());
+                    mapMovieToRatingScoreSum.put(movie,
+                                                 mapUserMovieToRating
+                                                 .get(neighbor)
+                                                 .get(movie).getScore());
                 } else {
                     mapMovieToRatingAmount
                             .put(movie,
                                  mapMovieToRatingAmount.get(movie) + 1);
                     
-                    mapMovieToRatingScore
+                    mapMovieToRatingScoreSum
                             .put(movie,
-                                 mapMovieToRatingScore.get(movie) + 
+                                 mapMovieToRatingScoreSum.get(movie) + 
                                  mapUserMovieToRating
                                  .get(neighbor)
                                  .get(movie).getScore());
@@ -151,8 +151,10 @@ public class UserMatcher {
                 new HashMap<Movie, Float>();
         
         for (final Movie movie : mapMovieToRatingAmount.keySet()) {
-            final float averageScore = 1.0f * mapMovieToRatingScore.get(movie) /
-                                              mapMovieToRatingAmount.get(movie);
+            final float averageScore = 
+                    1.0f * mapMovieToRatingScoreSum.get(movie) /
+                           mapMovieToRatingAmount.get(movie);
+            
             averageMovieRating.put(movie, averageScore);
         }
         
@@ -233,8 +235,18 @@ public class UserMatcher {
         
         @Override
         public int compare(final Movie movie1, final Movie movie2) {
-            return Float.compare(averageScoreMap.get(movie1),
-                                 averageScoreMap.get(movie2));
+            final float diff = averageScoreMap.get(movie1) - 
+                               averageScoreMap.get(movie2);
+            
+            if (diff == 0.0f) {
+                return movie1.getMovieTitle().compareTo(movie2.getMovieTitle());
+            } else if (diff < 0.0f) {
+                return -1;
+            } else {
+                return 1;
+            }
+//            return Float.compare(averageScoreMap.get(movie1),
+//                                 averageScoreMap.get(movie2));
         }
     }
 }
