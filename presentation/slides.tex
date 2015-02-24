@@ -1,0 +1,108 @@
+\documentclass{beamer}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{verbatim}
+
+\title{{\rmfamily\scshape The movie recommender system}}
+\author{$\mathfrak{Rodion \, Efremov \, a.k.a. \, Machine \, Funkeehs}$}
+\date{}
+\institute{Project in Practical Machine Learning, spring 2015, Department of Computer Science, University of Helsinki}
+
+\usetheme{AnnArbor}
+\usecolortheme{dove}
+\usefonttheme[onlymath]{serif}
+
+\begin{document}
+\maketitle
+
+\begin{frame}
+  \frametitle{Objective of the machine learning system}
+  \pause
+  \begin{itemize}
+   \item Let a user rate some movies of her/his choice. A rating is an integer within range $[1, 5]$.
+   \pause
+   \item After rating, recommend some movies to the user taking her/his ratings into account.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Basic ``training data''}
+  \pause
+  \begin{itemize}
+  \item The smallest \textbf{movielens} data package.
+  \pause
+  \item Contains 943 users, 1682 movies and 1e5 ratings.
+  \pause
+  \item Of course, the system supports adding more users and ratings to the database.
+  \pause
+  \item Ratings may be updated or removed.
+  \pause
+  \item It is not, however, possible to modify the movie set in our implementation.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Solving recommendation problem}
+  \pause
+  \begin{itemize}
+  \item How do we recommend movies to a user $U_0$?
+  \pause
+  \item Find, say $k$, other users $U_1, \dots, U_k$ that act \textbf{like} $U_0$ and recommend $U_0$ whatever $U_1, \dots, U_k$ tend to like!
+  \pause
+  \item So we use the famous $k$-nearest neighbor algorithm.
+  \pause 
+  \item What does \textbf{like} means? We need a \textbf{similarity measure} here...
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Similarity measure}
+  \pause
+  \begin{itemize}
+   \item The basic Jaccard-coefficient is applicable here:
+  \[
+  d(U_i, U_j) = \frac{f_{11}}{f_{01} + f_{10} + f_{11}}, 
+  \]
+  \pause
+  where 
+    \begin{itemize}
+    \pause
+    \item $f_{01}$ is the amount of all movies seen by the user $U_j$,
+    \pause
+    \item $f_{10}$ is the amount of all movies seen by the user $U_i$,
+    \pause
+    \item $f_{11} = |M|$ is the amount of all movies seen by \textbf{both} $U_j$ and $U_i$.
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{The actual similarity measure used}
+  \pause
+  We used the following measure:
+  \[
+  d(U_i, U_j) = \frac{f_{11} - \sigma(U_i, U_j)}{f_{01} + f_{10} + f_{11}}, 
+  \]
+  \pause
+  where
+  \[
+  \sigma(U_i, U_j) = \sum_{m \in M} \frac{|r_i(m)  - r_j(m)|}{5},
+  \]
+  \pause
+  where
+  \begin{itemize}
+  \item $M$ is the set of movies which both the users $U_i$ and $U_j$ have seen,
+  \pause
+  \item  $r_x(m)$ gives the rating score for the movie $m$ by user $U_x$.
+  \pause
+  \item $|r_i(m) - r_j(m)|$ is the integer within interval $[0, 4]$.
+  \end{itemize}
+\end{frame}
+  
+\begin{frame}
+\frametitle{The actual similarity measure used}
+So we use the Jaccard coefficient, but we penalize the similarity at those movies that have drastically different rating scores and we do not penalize at all those movies that have the same scores (as given by the two users, whose similarity is measured).
+\end{frame}
+
+\end{document}
