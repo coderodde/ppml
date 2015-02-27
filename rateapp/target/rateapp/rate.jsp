@@ -8,6 +8,7 @@
     </head>
     <body>
         <h1>Rate your favorite movies, ${username}!</h1>
+        <h4 style="color:red;">(You don't have to rate all the movies in order to receive recommendations. Rate only those movies that you want to rate.)</h4>
 
         <form action="rate" method="post">
             <input type="submit" value="Rate!">
